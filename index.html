@@ -1222,6 +1222,7 @@ function getCommentBucketKeyForIdentity(gid, identity = currentIdentity) {
 }
 
 function getCommentsForBucket(bucketKey) {
+  if (!bucketKey) return [];
   const comments = D && D.comments ? D.comments[bucketKey] : null;
   return Array.isArray(comments) ? comments : [];
 }
@@ -1231,22 +1232,28 @@ function getCommentCountForIdentity(gid, identity = currentIdentity) {
   return bucketKey ? getCommentsForBucket(bucketKey).length : 0;
 }
 
+function getCommentTimestamp(comment) {
+  return Number(comment && (comment.createdAt ?? comment.ts) || 0);
+}
+
 function getCommentAuthorMeta(comment, bucketKey) {
-  if (comment && comment.authorType === 'fixed') {
-    const player = PLAYERS.find(p => p.key === comment.authorKey);
+  const playerKey = comment && (comment.playerKey || comment.authorKey);
+  if (playerKey) {
+    const player = PLAYERS.find(p => p.key === playerKey);
     if (player) {
       return { label: player.name, emoji: player.emoji, bg: player.bg };
     }
   }
 
-  if (comment && comment.authorType === 'guest') {
-    const guestName = comment.authorName || '游客';
+  const isGuest = !!(comment && (comment.isGuest === true || comment.role === 'guest' || comment.authorType === 'guest'));
+  if (isGuest) {
+    const guestName = comment.displayName || comment.authorName || '游客';
     return { label: `${guestName}（游客）`, emoji: GUEST_EMOJI, bg: GUEST_BG };
   }
 
   const parts = bucketKey.split('_');
-  const playerKey = parts[1];
-  const player = PLAYERS.find(p => p.key === playerKey);
+  const bucketPlayerKey = parts[1];
+  const player = PLAYERS.find(p => p.key === bucketPlayerKey);
   if (player) {
     return { label: player.name, emoji: player.emoji, bg: player.bg };
   }
@@ -1254,15 +1261,41 @@ function getCommentAuthorMeta(comment, bucketKey) {
   return { label: '游客', emoji: GUEST_EMOJI, bg: GUEST_BG };
 }
 
+function canCurrentIdentityDeleteComment(comment, bucketKey) {
+  if (!currentIdentity) return false;
+
+  const commentPlayerKey = comment && (comment.playerKey || comment.authorKey);
+  const isGuest = !!(comment && (comment.isGuest === true || comment.role === 'guest' || comment.authorType === 'guest'));
+  const ownerUid = comment && (comment.uid || comment.authorUid);
+  const ownerGuestId = comment && (comment.guestId || comment.authorGuestId);
+
+  if (currentIdentity.type === 'guest') {
+    if (!isGuest && !(bucketKey && bucketKey.includes('_guest_'))) return false;
+    if (ownerGuestId && currentIdentity.guestId === ownerGuestId) return true;
+    if (ownerUid && currentIdentity.authUid && ownerUid === currentIdentity.authUid) return true;
+    return !!(bucketKey && currentIdentity.guestId && bucketKey.includes(`_guest_${currentIdentity.guestId}`) && !commentPlayerKey);
+  }
+
+  if (commentPlayerKey) return commentPlayerKey === currentIdentity.playerKey;
+  if (isGuest) return false;
+
+  const parts = bucketKey.split('_');
+  return parts[1] === currentIdentity.playerKey;
+}
+
 function renderCommentItem(comment, bucketKey) {
   const meta = getCommentAuthorMeta(comment, bucketKey);
+  const timestamp = getCommentTimestamp(comment);
+  const deleteHtml = canCurrentIdentityDeleteComment(comment, bucketKey)
+    ? `<span class="comment-delete" onclick="deleteComment('${bucketKey}',${timestamp})">删除</span>`
+    : '';
   return `
     <div class="comment-item">
       <div class="comment-avatar ${meta.bg}">${meta.emoji}</div>
       <div class="comment-content">
         <div class="comment-text"><span class="comment-author-inline">${escHtml(meta.label)}：</span>${escHtml(comment && comment.text)}</div>
-        <span class="comment-time">${fmtTime(comment && comment.ts)}
-          <span class="comment-delete" onclick="deleteComment('${bucketKey}',${comment && comment.ts})">删除</span>
+        <span class="comment-time">${fmtTime(timestamp)}
+          ${deleteHtml}
         </span>
       </div>
     </div>
@@ -1305,14 +1338,20 @@ function openCommentBucket(gid, bucketKey, options = {}) {
 }
 
 function buildCommentPayload(text) {
-  const ts = Date.now();
-  if (!currentIdentity) return { text, ts };
+  const createdAt = Date.now();
+  if (!currentIdentity) return { text, createdAt, ts: createdAt };
 
   if (currentIdentity.type === 'fixed') {
     const player = getIdentityPlayer(currentIdentity);
     return {
       text,
-      ts,
+      createdAt,
+      ts: createdAt,
+      displayName: player ? player.name : currentIdentity.displayName,
+      playerKey: player ? player.key : currentIdentity.playerKey,
+      role: 'fixed',
+      isGuest: false,
+      uid: currentIdentity.authUid || null,
       authorType: 'fixed',
       authorKey: player ? player.key : currentIdentity.playerKey,
       authorName: player ? player.name : currentIdentity.displayName,
@@ -1324,7 +1363,13 @@ function buildCommentPayload(text) {
 
   return {
     text,
-    ts,
+    createdAt,
+    ts: createdAt,
+    displayName: currentIdentity.displayName,
+    role: 'guest',
+    isGuest: true,
+    uid: currentIdentity.authUid || null,
+    guestId: currentIdentity.guestId,
     authorType: 'guest',
     authorName: currentIdentity.displayName,
     authorEmoji: GUEST_EMOJI,
@@ -1615,6 +1660,18 @@ function renderGames(filter) {
 
 /* ── RATE ── */
 function rate(gid, pkey, val) {
+  if (!currentIdentity) {
+    openIdentityModal();
+    return;
+  }
+  if (currentIdentity.type === 'guest') {
+    toast('游客不能评分，请切换为固定身份');
+    return;
+  }
+  if (currentIdentity.playerKey !== pkey) {
+    toast('只能修改当前身份的评分');
+    return;
+  }
   const key = gid+'_'+pkey;
   const current = Number(D.ratings[key] || 0);
   if (current === val) {
@@ -1730,7 +1787,6 @@ function openGameThread(gid) {
   if (!game) return;
   modalCtx = { type:'thread', gameId:gid };
   document.getElementById('modalTitle').textContent = '💬 ' + game.title + ' 吐槽区';
-  document.getElementById('commentInputArea').style.display = 'none';
 
   const body = document.getElementById('modalBody');
   let allCmts = [];
@@ -1740,12 +1796,22 @@ function openGameThread(gid) {
       allCmts.push({ ...comment, bucketKey });
     });
   });
-  allCmts.sort((a,b) => (b.ts || 0) - (a.ts || 0));
+  allCmts.sort((a,b) => getCommentTimestamp(b) - getCommentTimestamp(a));
 
   if (!allCmts.length) {
     body.innerHTML = `<div class="no-comments">还没有人吐槽过这个游戏<br>点卡片下方的「当前身份吐槽」开始吐槽吧</div>`;
   } else {
     body.innerHTML = allCmts.map(c => renderCommentItem(c, c.bucketKey)).join('');
+  }
+
+  const area = document.getElementById('commentInputArea');
+  const textarea = document.getElementById('commentTextarea');
+  if (currentIdentity) {
+    area.style.display = 'flex';
+    textarea.value = '';
+    textarea.placeholder = `以${getIdentityLabel()}身份说点什么…`;
+  } else {
+    area.style.display = 'none';
   }
   openModal();
 }
@@ -1772,41 +1838,45 @@ function openCommentInput(gid, pkey) {
   const game = allGames().find(g=>g.id===gid);
   const player = PLAYERS.find(p=>p.key===pkey);
   if (!game||!player) return;
-  const canWrite = currentIdentity && currentIdentity.type === 'fixed' && currentIdentity.playerKey === pkey;
-  const readOnlyHint = !currentIdentity
-    ? '先选择身份，再写吐槽。'
-    : canWrite
-      ? ''
-      : `当前身份是 ${getIdentityLabel()}。这里只显示 ${player.name} 的吐槽；想以当前身份发言，请点卡片下方的“当前身份吐槽”。`;
+  const canWrite = !!currentIdentity;
+  const readOnlyHint = !currentIdentity ? '先选择身份，再写吐槽。' : '';
 
   openCommentBucket(gid, `${gid}_${pkey}`, {
     title: `${player.emoji} ${player.name} 对 ${game.title} 的吐槽`,
     allowInput: canWrite,
     emptyText: canWrite ? '还没有吐槽，写一条吧！' : `${player.name} 还没有吐槽`,
     readOnlyHint,
-    placeholder: `以${player.name}身份说点什么…`,
+    placeholder: canWrite ? `以${getIdentityLabel()}身份回复…` : '说点什么…',
   });
 }
 
 function submitComment() {
-  if (!modalCtx || modalCtx.type !== 'comment' || !modalCtx.options || !modalCtx.options.allowInput) return;
+  if (!modalCtx || (modalCtx.type !== 'comment' && modalCtx.type !== 'thread')) return;
+  if (modalCtx.type === 'comment' && (!modalCtx.options || !modalCtx.options.allowInput)) return;
   if (!currentIdentity) {
     openIdentityModal();
     return;
   }
   const text = document.getElementById('commentTextarea').value.trim();
   if (!text) return;
-  const key = modalCtx.bucketKey;
+  const key = modalCtx.type === 'comment'
+    ? modalCtx.bucketKey
+    : getCommentBucketKeyForIdentity(modalCtx.gameId);
+  if (!key) return;
   if (!D.comments[key]) D.comments[key] = [];
   D.comments[key].push(buildCommentPayload(text));
   save(D);
-  openCommentBucket(modalCtx.gameId, modalCtx.bucketKey, modalCtx.options);
+  if (modalCtx.type === 'comment') {
+    openCommentBucket(modalCtx.gameId, modalCtx.bucketKey, modalCtx.options);
+  } else {
+    openGameThread(modalCtx.gameId);
+  }
   setView(currentView);
   toast('💬 吐槽成功');
 }
 
 function deleteComment(key, ts) {
-  D.comments[key] = (D.comments[key]||[]).filter(c => c.ts !== ts);
+  D.comments[key] = (D.comments[key]||[]).filter(c => getCommentTimestamp(c) !== ts);
   if (!D.comments[key].length) delete D.comments[key];
   save(D);
   // refresh the current modal
