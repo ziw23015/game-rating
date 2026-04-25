@@ -1490,6 +1490,11 @@ function compareDefaultOrder(a, b, orderMap) {
   return (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0);
 }
 
+function compareTitleThenDefault(a, b, orderMap) {
+  const cmp = a.title.localeCompare(b.title, 'zh-CN');
+  return cmp || compareDefaultOrder(a, b, orderMap);
+}
+
 function statusSortRank(gid, targetStatus) {
   const hasStatus = Object.prototype.hasOwnProperty.call(D.status || {}, gid);
   if (hasStatus && D.status[gid] === targetStatus) return 0;
@@ -1525,10 +1530,7 @@ function renderGames(filter) {
 
   // Apply sort
   if (currentSort === 'az') {
-    games.sort((a,b) => {
-      const cmp = a.title.localeCompare(b.title, 'zh-CN');
-      return cmp || compareDefaultOrder(a, b, defaultOrder);
-    });
+    games.sort((a,b) => compareTitleThenDefault(a, b, defaultOrder));
   } else if (currentSort === 'high') {
     games.sort((a,b) => {
       const aa = gameAvg(a.id), bb = gameAvg(b.id);
@@ -1550,14 +1552,14 @@ function renderGames(filter) {
       const ra = statusSortRank(a.id, 'played');
       const rb = statusSortRank(b.id, 'played');
       if (ra !== rb) return ra - rb;
-      return compareDefaultOrder(a, b, defaultOrder);
+      return compareTitleThenDefault(a, b, defaultOrder);
     });
   } else if (currentSort === 'unopened_first') {
     games.sort((a,b) => {
       const ra = statusSortRank(a.id, 'unplayed');
       const rb = statusSortRank(b.id, 'unplayed');
       if (ra !== rb) return ra - rb;
-      return compareDefaultOrder(a, b, defaultOrder);
+      return compareTitleThenDefault(a, b, defaultOrder);
     });
   }
 
