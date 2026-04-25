@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎲 游戏吐槽鉴赏</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root, [data-theme="morandi-blue"] {
+  --bg: #b8c4cf;
+  --bg-deep: #a2b0be;
+  --card: #e9edf2;
+  --card-alt: #dfe5ec;
+  --cream: #f0f3f6;
+  --rose: #b0a4aa;
+  --rose-deep: #968a90;
+  --sage: #8ea0aa;
+  --sage-deep: #6e8898;
+  --blue: #7e94a8;
+  --blue-deep: #5e7a92;
+  --mauve: #9a9aaf;
+  --mauve-deep: #7e7e98;
+  --warm: #a0aab8;
+  --warm-deep: #8494a6;
+  --text-dark: #2e3842;
+  --text-mid: #4e5e6e;
+  --text-light: #7e8e9a;
+  --border: #c2ccd6;
+  --star-on: #b8a070;
+  --star-off: #c0c8d0;
+  --shadow: rgba(46,56,66,0.1);
+  --overlay: rgba(38,48,60,0.55);
+  --header-bg: linear-gradient(160deg, #6b7e92 0%, #7e94a8 50%, #8ea0b2 100%);
+  --rank-gold: #8da4b8;
+  --rank-silver: #a8b8c4;
+  --rank-bronze: #b0a8a0;
+}
+
+[data-theme="sakura"] {
+  --bg: #d4bfc4;
+  --bg-deep: #c4aab2;
+  --card: #f5eced;
+  --card-alt: #f0e4e6;
+  --cream: #faf5f5;
+  --rose: #c9a0a8;
+  --rose-deep: #b08088;
+  --sage: #b89aa4;
+  --sage-deep: #a07a88;
+  --blue: #c08a96;
+  --blue-deep: #a86e7e;
+  --mauve: #b498a0;
+  --mauve-deep: #9a7e88;
+  --warm: #c4a8b0;
+  --warm-deep: #b08e98;
+  --text-dark: #3e2a30;
+  --text-mid: #6a4e56;
+  --text-light: #9a7e86;
+  --border: #d8c4ca;
+  --star-on: #d4a0a0;
+  --star-off: #d0c4c6;
+  --shadow: rgba(62,42,48,0.1);
+  --overlay: rgba(50,30,38,0.55);
+  --header-bg: linear-gradient(160deg, #b07882 0%, #c8909a 50%, #d4a0aa 100%);
+  --rank-gold: #c08a96;
+  --rank-silver: #c8a8b0;
+  --rank-bronze: #b0a098;
+}
+
+[data-theme="forest"] {
+  --bg: #a8b8a4;
+  --bg-deep: #90a48c;
+  --card: #e8ede6;
+  --card-alt: #dfe6dc;
+  --cream: #f2f5f0;
+  --rose: #a0aa98;
+  --rose-deep: #88947e;
+  --sage: #8aa488;
+  --sage-deep: #6e8a6c;
+  --blue: #7a9878;
+  --blue-deep: #5e8060;
+  --mauve: #94a090;
+  --mauve-deep: #7a887a;
+  --warm: #a4b098;
+  --warm-deep: #8a9a80;
+  --text-dark: #2a3428;
+  --text-mid: #4a5e46;
+  --text-light: #7a8e76;
+  --border: #c0ccbc;
+  --star-on: #b0a870;
+  --star-off: #bcc4b8;
+  --shadow: rgba(42,52,40,0.1);
+  --overlay: rgba(32,44,30,0.55);
+  --header-bg: linear-gradient(160deg, #5a7a58 0%, #6e8e6a 50%, #80a07c 100%);
+  --rank-gold: #7a9878;
+  --rank-silver: #98ac96;
+  --rank-bronze: #a8a090;
+}
+
+[data-theme="twilight"] {
+  --bg: #beb8cc;
+  --bg-deep: #a8a0be;
+  --card: #edebf2;
+  --card-alt: #e5e2ec;
+  --cream: #f5f3f8;
+  --rose: #b0a4b8;
+  --rose-deep: #9688a0;
+  --sage: #9a98b4;
+  --sage-deep: #7e7a9e;
+  --blue: #8e88a8;
+  --blue-deep: #706892;
+  --mauve: #a898b0;
+  --mauve-deep: #8e7e98;
+  --warm: #aaa4b8;
+  --warm-deep: #948ca6;
+  --text-dark: #302838;
+  --text-mid: #504668;
+  --text-light: #807498;
+  --border: #cac4d6;
+  --star-on: #b8a888;
+  --star-off: #c4c0cc;
+  --shadow: rgba(48,40,56,0.1);
+  --overlay: rgba(38,28,50,0.55);
+  --header-bg: linear-gradient(160deg, #6e6090 0%, #8878a4 50%, #9e90b4 100%);
+  --rank-gold: #8e88a8;
+  --rank-silver: #a8a4b8;
+  --rank-bronze: #b0a8a0;
+}
+
+[data-theme="caramel"] {
+  --bg: #c8baa8;
+  --bg-deep: #b4a492;
+  --card: #f0eae0;
+  --card-alt: #eae2d6;
+  --cream: #f8f4ee;
+  --rose: #baa898;
+  --rose-deep: #a08e7e;
+  --sage: #aa9e8e;
+  --sage-deep: #928270;
+  --blue: #a89478;
+  --blue-deep: #907a5e;
+  --mauve: #aa9a8e;
+  --mauve-deep: #907e72;
+  --warm: #b8a48e;
+  --warm-deep: #a28c72;
+  --text-dark: #382e22;
+  --text-mid: #5e4e3a;
+  --text-light: #8e7e68;
+  --border: #d0c4b4;
+  --star-on: #c0a060;
+  --star-off: #c8c0b4;
+  --shadow: rgba(56,46,34,0.1);
+  --overlay: rgba(46,36,24,0.55);
+  --header-bg: linear-gradient(160deg, #8a7258 0%, #a08868 50%, #b09e7a 100%);
+  --rank-gold: #a89478;
+  --rank-silver: #b8ac9c;
+  --rank-bronze: #a89888;
+}
+
+[data-theme="deep-ocean"] {
+  --bg: #1e2a38;
+  --bg-deep: #162230;
+  --card: #283848;
+  --card-alt: #2e4050;
+  --cream: #c8d4e0;
+  --rose: #5a6878;
+  --rose-deep: #4a5868;
+  --sage: #4a6478;
+  --sage-deep: #3a546a;
+  --blue: #4a6a88;
+  --blue-deep: #3a5a78;
+  --mauve: #586878;
+  --mauve-deep: #485868;
+  --warm: #506070;
+  --warm-deep: #405060;
+  --text-dark: #d0dae4;
+  --text-mid: #a0b0c0;
+  --text-light: #6a8098;
+  --border: #384858;
+  --star-on: #c0a060;
+  --star-off: #4a5868;
+  --shadow: rgba(10,18,28,0.3);
+  --overlay: rgba(10,16,24,0.7);
+  --header-bg: linear-gradient(160deg, #142030 0%, #1e3048 50%, #283a54 100%);
+  --rank-gold: #4a6a88;
+  --rank-silver: #506878;
+  --rank-bronze: #586068;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 30% 0%, rgba(255,255,255,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 100%, rgba(0,0,0,0.06) 0%, transparent 50%);
+  min-height: 100vh;
+  font-family: 'Noto Sans SC', sans-serif;
+  color: var(--text-dark);
+  padding-bottom: 100px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--header-bg);
+  padding: 28px 16px 22px;
+  text-align: center;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 24px var(--shadow);
+}
+header h1 {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 30px;
+  color: var(--cream);
+  letter-spacing: 6px;
+  text-shadow: 0 2px 12px rgba(38,50,62,0.3);
+}
+header p {
+  color: rgba(245,241,235,0.65);
+  font-size: 11px;
+  margin-top: 4px;
+  letter-spacing: 2px;
+  font-weight: 300;
+}
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display: flex; gap: 6px; padding: 10px 14px;
+  overflow-x: auto; scrollbar-width: none;
+  background: rgba(38,50,62,0.08);
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-btn {
+  flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.35);
+  color: var(--text-mid); font-size: 12px;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.filter-btn.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: white; font-weight: 700;
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  background: rgba(255,255,255,0.25);
+  padding: 10px 16px;
+  display: flex; gap: 14px; align-items: center; justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-size: 18px; font-weight: 700;
+  color: var(--blue-deep);
+  font-family: 'Ma Shan Zheng', cursive;
+}
+.stat-label { font-size: 10px; color: var(--text-light); }
+.stat-divider { width: 1px; height: 26px; background: var(--border); }
+
+/* ── PLAYERS BAR ── */
+.players-bar {
+  display: flex; gap: 8px; justify-content: center;
+  padding: 12px 16px 8px; flex-wrap: wrap;
+}
+.player-chip {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--text-mid);
+  background: rgba(255,255,255,0.45);
+  border-radius: 20px; padding: 5px 12px;
+  border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.15s;
+  font-weight: 500;
+}
+.player-chip:active { transform: scale(0.95); background: rgba(255,255,255,0.7); }
+
+/* ── SORT BAR ── */
+.sort-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+}
+.sort-label {
+  font-size: 11px; color: var(--text-light);
+  font-weight: 500; margin-right: 2px; flex-shrink: 0;
+}
+.sort-btn {
+  padding: 4px 10px; border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.3);
+  color: var(--text-mid); font-size: 11px;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+}
+.sort-btn.active {
+  background: var(--blue-deep);
+  border-color: var(--blue-deep);
+  color: white; font-weight: 700;
+}
+
+/* ── GAME CARD ── */
+.game-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
+.game-card {
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px var(--shadow);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+/* Long press action bar */
+.card-actions {
+  position: absolute; inset: 0;
+  background: rgba(46,56,66,0.85);
+  backdrop-filter: blur(6px);
+  border-radius: 14px;
+  display: none;
+  align-items: center; justify-content: center; gap: 20px;
+  z-index: 10;
+  animation: fadeIn 0.15s ease;
+}
+.card-actions.show { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.action-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  background: none; border: none; cursor: pointer; color: white;
+  padding: 12px 20px; border-radius: 12px;
+  transition: background 0.15s;
+}
+.action-btn:active { background: rgba(255,255,255,0.12); }
+.action-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.action-icon.edit-icon { background: var(--blue); }
+.action-icon.delete-icon { background: #a07070; }
+.action-label { font-size: 12px; font-weight: 500; }
+.action-cancel {
+  position: absolute; bottom: 12px; right: 14px;
+  background: none; border: none; color: rgba(255,255,255,0.6);
+  font-size: 11px; cursor: pointer; font-family: 'Noto Sans SC', sans-serif;
+}
+
+/* Edit form in modal */
+.edit-form { display: flex; flex-direction: column; gap: 14px; padding: 6px 0; }
+.edit-field label {
+  display: block; font-size: 12px; color: var(--text-light);
+  margin-bottom: 5px; font-weight: 500;
+}
+.edit-field input {
+  width: 100%; border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 14px; font-family: 'Noto Sans SC', sans-serif;
+  background: white; color: var(--text-dark); outline: none;
+}
+.edit-field input:focus { border-color: var(--blue); }
+.edit-save-btn {
+  padding: 12px; border-radius: 12px;
+  background: var(--blue); border: none;
+  color: white; font-size: 14px; font-weight: 700;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer; margin-top: 4px;
+}
+.edit-save-btn:active { background: var(--blue-deep); }
+.card-header {
+  display: flex; align-items: center;
+  padding: 11px 14px; gap: 8px;
+  border-bottom: 1px solid rgba(180,195,210,0.5);
+  background: linear-gradient(135deg, var(--card) 0%, var(--card-alt) 100%);
+}
+.game-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--blue);
+  color: white; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-family: 'Ma Shan Zheng', cursive;
+}
+.game-title {
+  flex: 1; font-size: 15px; font-weight: 700;
+  color: var(--text-dark); cursor: pointer;
+}
+.game-title:active { opacity: 0.6; }
+
+/* Play status toggle */
+.play-status {
+  font-size: 10px; padding: 3px 8px;
+  border-radius: 8px; cursor: pointer;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 500; transition: all 0.2s;
+  border: 1px solid; user-select: none; flex-shrink: 0;
+}
+.play-status.played {
+  background: rgba(94,122,146,0.15);
+  border-color: var(--blue);
+  color: var(--blue-deep);
+}
+.play-status.unplayed {
+  background: rgba(160,170,184,0.2);
+  border-color: var(--warm);
+  color: var(--text-light);
+}
+
+/* Avg badge */
+.avg-badge {
+  font-size: 13px; font-weight: 700;
+  color: var(--star-on);
+  font-family: 'Ma Shan Zheng', cursive;
+  flex-shrink: 0;
+}
+.avg-badge.no-score { color: var(--star-off); font-size: 11px; font-family: 'Noto Sans SC'; font-weight: 400; }
+
+/* Ratings grid */
+.ratings-grid {
+  padding: 10px 14px 12px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.player-row { display: flex; flex-direction: column; gap: 3px; }
+.player-info {
+  display: flex; align-items: center; gap: 4px;
+}
+.player-name { font-size: 11px; color: var(--text-light); font-weight: 500; }
+.comment-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--warm);
+  color: white; font-size: 8px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0.7; transition: all 0.15s;
+  flex-shrink: 0; border: none;
+}
+.comment-dot:active { transform: scale(1.2); opacity: 1; }
+.comment-dot.has { opacity: 1; background: var(--blue-deep); }
+
+.stars { display: flex; gap: 2px; }
+.star {
+  font-size: 22px; cursor: pointer; transition: transform 0.1s;
+  line-height: 1; color: var(--star-off); user-select: none;
+}
+.star.on { color: var(--star-on); }
+.star:active { transform: scale(1.3); }
+
+/* ── MODAL / OVERLAY ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: var(--overlay);
+  z-index: 500; display: none;
+  align-items: flex-end; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--cream);
+  border-radius: 18px 18px 0 0;
+  width: 100%; max-width: 500px;
+  max-height: 85vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 -4px 30px rgba(38,50,62,0.25);
+  animation: slideUp 0.25s ease-out;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: var(--border); margin: 10px auto 0; flex-shrink: 0;
+}
+.modal-header {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title {
+  font-size: 16px; font-weight: 700; color: var(--text-dark);
+  font-family: 'Ma Shan Zheng', cursive; font-size: 20px;
+}
+.modal-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(38,50,62,0.08); border: none;
+  font-size: 16px; color: var(--text-mid); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-body {
+  flex: 1; overflow-y: auto; padding: 14px 18px 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Comment thread */
+.comment-item {
+  display: flex; gap: 10px; padding: 10px 0;
+  border-bottom: 1px solid rgba(180,195,210,0.5);
+}
+.comment-item:last-child { border-bottom: none; }
+.comment-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.comment-avatar.song { background: rgba(110,140,168,0.2); }
+.comment-avatar.zhu { background: rgba(140,160,180,0.2); }
+.comment-avatar.hui { background: rgba(120,150,178,0.2); }
+.comment-avatar.xin { background: rgba(130,155,175,0.2); }
+
+.comment-content { flex: 1; }
+.comment-author { font-size: 12px; font-weight: 700; color: var(--text-mid); }
+.comment-text { font-size: 13px; color: var(--text-dark); margin-top: 3px; line-height: 1.5; }
+.comment-time { font-size: 10px; color: var(--text-light); margin-top: 4px; }
+.comment-delete {
+  font-size: 10px; color: var(--rose); cursor: pointer;
+  margin-left: 8px; opacity: 0.6;
+}
+.comment-delete:active { opacity: 1; }
+
+.no-comments {
+  text-align: center; color: var(--text-light);
+  padding: 40px 16px; font-size: 13px;
+}
+
+/* Comment input */
+.comment-input-area {
+  padding: 12px 18px; border-top: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: flex-end;
+  background: rgba(255,255,255,0.5);
+}
+.comment-textarea {
+  flex: 1; border: 1px solid var(--border);
+  border-radius: 12px; padding: 8px 12px;
+  font-size: 13px; font-family: 'Noto Sans SC', sans-serif;
+  resize: none; background: white; color: var(--text-dark);
+  min-height: 36px; max-height: 80px;
+  outline: none;
+}
+.comment-textarea:focus { border-color: var(--blue); }
+.comment-textarea::placeholder { color: var(--text-light); }
+.comment-send {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--blue); border: none;
+  color: white; font-size: 16px; cursor: pointer;
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+}
+.comment-send:active { background: var(--blue-deep); }
+
+/* Player profile in modal */
+.profile-header {
+  text-align: center; padding: 10px 0 16px;
+}
+.profile-emoji { font-size: 44px; }
+.profile-name {
+  font-size: 20px; font-weight: 700; margin-top: 4px;
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--text-dark);
+}
+.profile-stat { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+
+.profile-game-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(180,195,210,0.4);
+}
+.profile-game-item:last-child { border-bottom: none; }
+.profile-game-rank {
+  width: 22px; font-size: 12px; font-weight: 700;
+  color: var(--text-light); text-align: center; flex-shrink: 0;
+}
+.profile-game-name {
+  flex: 1; font-size: 13px; font-weight: 500; color: var(--text-dark);
+}
+.profile-game-stars {
+  display: flex; gap: 1px; font-size: 14px; color: var(--star-off);
+}
+.profile-game-stars .on { color: var(--star-on); }
+
+.profile-section-label {
+  font-size: 11px; color: var(--text-light);
+  font-weight: 500; padding: 12px 0 4px;
+  letter-spacing: 1px;
+}
+
+/* ── ADD GAME ── */
+.add-game-section {
+  padding: 16px 12px;
+}
+.add-game-card {
+  background: rgba(255,255,255,0.35);
+  border: 2px dashed var(--border);
+  border-radius: 14px; padding: 18px 16px;
+  display: flex; gap: 10px; align-items: center;
+}
+.add-game-input {
+  flex: 1; border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 14px; font-family: 'Noto Sans SC', sans-serif;
+  background: white; color: var(--text-dark); outline: none;
+}
+.add-game-input:focus { border-color: var(--blue); }
+.add-game-input::placeholder { color: var(--text-light); }
+.add-game-btn {
+  padding: 10px 18px; border-radius: 10px;
+  background: var(--blue); border: none;
+  color: white; font-size: 13px; font-weight: 700;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+.add-game-btn:active { background: var(--blue-deep); }
+
+/* ── RANKING VIEW ── */
+.ranking-view { padding: 12px; display: none; flex-direction: column; gap: 8px; }
+.ranking-view.active { display: flex; }
+.rank-item {
+  background: var(--card); border-radius: 12px;
+  padding: 12px 14px; display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--border); box-shadow: 0 2px 8px var(--shadow);
+}
+.rank-pos {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px;
+  font-family: 'Ma Shan Zheng', cursive; flex-shrink: 0;
+}
+.rank-pos.gold { background: var(--rank-gold); color: white; }
+.rank-pos.silver { background: var(--rank-silver); color: white; }
+.rank-pos.bronze { background: var(--rank-bronze); color: white; }
+.rank-pos.normal { background: var(--blue); color: white; }
+.rank-info { flex: 1; }
+.rank-title { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+.rank-scores { font-size: 11px; color: var(--text-light); margin-top: 1px; }
+.rank-avg {
+  font-size: 18px; font-weight: 700;
+  color: var(--star-on); font-family: 'Ma Shan Zheng', cursive;
+}
+
+/* ── THEME PICKER ── */
+.theme-toggle {
+  position: absolute; top: 14px; right: 14px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.85);
+  font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; z-index: 10;
+  backdrop-filter: blur(4px);
+}
+.theme-toggle:active { transform: scale(0.9); background: rgba(255,255,255,0.3); }
+
+.theme-panel {
+  position: absolute; top: 52px; right: 10px;
+  background: var(--cream);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2), 0 0 0 1px var(--border);
+  display: none; z-index: 200;
+  width: 220px;
+  animation: fadeIn 0.15s ease;
+}
+.theme-panel.open { display: block; }
+
+.theme-panel-title {
+  font-size: 12px; font-weight: 700;
+  color: var(--text-mid); margin-bottom: 10px;
+  text-align: center; letter-spacing: 1px;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.theme-option {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 8px; border-radius: 10px;
+  border: 2px solid transparent;
+  background: rgba(0,0,0,0.03);
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'Noto Sans SC', sans-serif;
+}
+.theme-option:active { transform: scale(0.96); }
+.theme-option.active {
+  border-color: var(--blue);
+  background: rgba(0,0,0,0.06);
+}
+
+.theme-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15), inset 0 1px 2px rgba(255,255,255,0.3);
+}
+
+.theme-name {
+  font-size: 11px; color: var(--text-mid); font-weight: 500;
+  line-height: 1.2;
+}
+
+/* ── GAME VIEW wrapper ── */
+.game-view { }
+.game-view.hidden { display: none; }
+
+/* ── RESET ── */
+.reset-btn {
+  display: block; margin: 12px auto 0;
+  padding: 10px 24px; background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-light); border-radius: 20px;
+  font-size: 12px; font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+}
+.reset-btn:active { background: rgba(94,122,146,0.15); color: var(--blue-deep); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: rgba(38,50,62,0.9); color: var(--cream);
+  padding: 10px 20px; border-radius: 24px;
+  font-size: 13px; font-weight: 500;
+  z-index: 600; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  backdrop-filter: blur(8px);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎲 游戏吐槽鉴赏</h1>
+  <p>精神病院出品</p>
+  <button class="theme-toggle" onclick="toggleThemePanel()" title="更换皮肤">🎨</button>
+  <div class="theme-panel" id="themePanel">
+    <div class="theme-panel-title">选择主题</div>
+    <div class="theme-grid">
+      <div class="theme-option active" data-theme="morandi-blue" onclick="setTheme('morandi-blue')">
+        <div class="theme-dot" style="background:linear-gradient(135deg,#6b7e92,#8ea0b2);"></div>
+        <span class="theme-name">莫兰迪蓝</span>
+      </div>
+      <div class="theme-option" data-theme="sakura" onclick="setTheme('sakura')">
+        <div class="theme-dot" style="background:linear-gradient(135deg,#b07882,#d4a0aa);"></div>
+        <span class="theme-name">樱花粉</span>
+      </div>
+      <div class="theme-option" data-theme="forest" onclick="setTheme('forest')">
+        <div class="theme-dot" style="background:linear-gradient(135deg,#5a7a58,#80a07c);"></div>
+        <span class="theme-name">森林绿</span>
+      </div>
+      <div class="theme-option" data-theme="twilight" onclick="setTheme('twilight')">
+        <div class="theme-dot" style="background:linear-gradient(135deg,#6e6090,#9e90b4);"></div>
+        <span class="theme-name">暮光紫</span>
+      </div>
+      <div class="theme-option" data-theme="caramel" onclick="setTheme('caramel')">
+        <div class="theme-dot" style="background:linear-gradient(135deg,#8a7258,#b09e7a);"></div>
+        <span class="theme-name">焦糖棕</span>
+      </div>
+      <div class="theme-option" data-theme="deep-ocean" onclick="setTheme('deep-ocean')">
+        <div class="theme-dot" style="background:linear-gradient(135deg,#142030,#283a54);"></div>
+        <span class="theme-name">深海夜</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <button class="filter-btn active" data-view="all">全部游戏</button>
+  <button class="filter-btn" data-view="ranked">排行榜</button>
+  <button class="filter-btn" data-view="unrated">未评分</button>
+  <button class="filter-btn" data-view="rated">已评分</button>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num" id="sTotal">15</div><div class="stat-label">总游戏</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-item"><div class="stat-num" id="sRated">0</div><div class="stat-label">已评分</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-item"><div class="stat-num" id="sTop">—</div><div class="stat-label">最高分</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-item"><div class="stat-num" id="sAvg">—</div><div class="stat-label">平均分</div></div>
+</div>
+
+<div class="players-bar" id="playersBar"></div>
+
+<div class="game-view" id="gameView">
+  <div class="sort-bar">
+    <span class="sort-label">排序</span>
+    <button class="sort-btn active" data-sort="default">默认</button>
+    <button class="sort-btn" data-sort="az">A-Z</button>
+    <button class="sort-btn" data-sort="high">评分↓</button>
+    <button class="sort-btn" data-sort="low">评分↑</button>
+  </div>
+  <div class="game-list" id="gameList"></div>
+  <div class="add-game-section">
+    <div class="add-game-card">
+      <input class="add-game-input" id="newGameInput" placeholder="输入新桌游名称…" />
+      <button class="add-game-btn" onclick="addGame()">＋ 新增</button>
+    </div>
+  </div>
+  <button class="reset-btn" onclick="confirmReset()">清空所有数据</button>
+</div>
+
+<div class="ranking-view" id="rankingView"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="comment-input-area" id="commentInputArea" style="display:none;">
+      <textarea class="comment-textarea" id="commentTextarea" placeholder="说点什么…" rows="1"></textarea>
+      <button class="comment-send" onclick="submitComment()">↑</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── THEME ── */
+const THEME_KEY = 'bg_theme_v1';
+function loadTheme() {
+  const t = localStorage.getItem(THEME_KEY) || 'morandi-blue';
+  applyTheme(t);
+}
+function applyTheme(name) {
+  document.documentElement.setAttribute('data-theme', name);
+  document.querySelectorAll('.theme-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === name);
+  });
+}
+function setTheme(name) {
+  localStorage.setItem(THEME_KEY, name);
+  applyTheme(name);
+  document.getElementById('themePanel').classList.remove('open');
+  toast('🎨 已切换主题');
+}
+function toggleThemePanel() {
+  document.getElementById('themePanel').classList.toggle('open');
+}
+// Close panel when tapping outside
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('themePanel');
+  const btn = document.querySelector('.theme-toggle');
+  if (panel && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+loadTheme();
+
+/* ── DATA ── */
+const PLAYERS = [
+  { key:'song', name:'小宋', emoji:'🐱', bg:'song' },
+  { key:'zhu',  name:'小猪', emoji:'🐷', bg:'zhu'  },
+  { key:'hui',  name:'小灰', emoji:'🐯', bg:'hui'  },
+  { key:'xin',  name:'小心', emoji:'💛', bg:'xin'  },
+];
+
+const DEFAULT_GAMES = [
+  { id:'g1',  title:'农场主',       tag:'带扩' },
+  { id:'g2',  title:'我是大老板',    tag:'' },
+  { id:'g3',  title:'以鹅传鹅',     tag:'' },
+  { id:'g4',  title:'谍报风云',     tag:'' },
+  { id:'g5',  title:'掘地出笼',     tag:'' },
+  { id:'g6',  title:'瞎掰王',       tag:'' },
+  { id:'g7',  title:'画笔传情',     tag:'' },
+  { id:'g8',  title:'奥地利大饭店',  tag:'带扩' },
+  { id:'g9',  title:'现代艺术',     tag:'缺金属币' },
+  { id:'g10', title:'大宋百商图',   tag:'' },
+  { id:'g11', title:'卡卡颂',       tag:'' },
+  { id:'g12', title:'自然和弦',     tag:'' },
+  { id:'g13', title:'爆炸猫',       tag:'灾祸食谱' },
+  { id:'g14', title:'猴宫巧匠',     tag:'乐高拼积木' },
+  { id:'g15', title:'Pan Am 泛美航空', tag:'' },
+];
+
+const SK = 'bg_app_v3';
+function load() { try { return JSON.parse(localStorage.getItem(SK)) || {}; } catch(e) { return {}; } }
+function save(d) { try { localStorage.setItem(SK, JSON.stringify(d)); } catch(e) {} }
+
+let D = load();
+if (!D.ratings) D.ratings = {};
+if (!D.status) D.status = {};
+if (!D.comments) D.comments = {};
+if (!D.customGames) D.customGames = [];
+if (!D.deleted) D.deleted = [];
+if (!D.edits) D.edits = {};
+save(D);
+
+function allGames() {
+  const custom = (D.customGames||[]).map((g,i) => ({
+    id: 'c'+i, title: g.title, tag: g.tag||''
+  }));
+  return [...DEFAULT_GAMES, ...custom]
+    .filter(g => !(D.deleted||[]).includes(g.id))
+    .map(g => {
+      const e = (D.edits||{})[g.id];
+      if (e) return { ...g, title: e.title ?? g.title, tag: e.tag ?? g.tag };
+      return g;
+    });
+}
+
+let currentView = 'all';
+let currentSort = 'default';
+let modalCtx = null; // { type, gameId, playerKey }
+
+/* ── HELPERS ── */
+function gameAvg(gid) {
+  const sc = PLAYERS.map(p => D.ratings[gid+'_'+p.key]).filter(v=>v&&v>0);
+  return sc.length ? sc.reduce((a,b)=>a+b,0)/sc.length : null;
+}
+
+function fmtTime(ts) {
+  const d = new Date(ts);
+  return `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+
+/* ── TOAST ── */
+let tt;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('show'),1500);
+}
+
+/* ── RENDER PLAYERS BAR ── */
+function renderPlayersBar() {
+  const bar = document.getElementById('playersBar');
+  bar.innerHTML = PLAYERS.map(p =>
+    `<div class="player-chip" onclick="openPlayerProfile('${p.key}')">${p.emoji} ${p.name}</div>`
+  ).join('');
+}
+
+/* ── RENDER GAME CARDS ── */
+function renderGames(filter) {
+  const list = document.getElementById('gameList');
+  list.innerHTML = '';
+  let games = allGames();
+
+  if (filter === 'unrated') games = games.filter(g => PLAYERS.every(p => !D.ratings[g.id+'_'+p.key]));
+  else if (filter === 'rated') games = games.filter(g => PLAYERS.some(p => D.ratings[g.id+'_'+p.key]));
+
+  // Apply sort
+  if (currentSort === 'az') {
+    games.sort((a,b) => a.title.localeCompare(b.title, 'zh-CN'));
+  } else if (currentSort === 'high') {
+    games.sort((a,b) => {
+      const aa = gameAvg(a.id), bb = gameAvg(b.id);
+      if (aa === null && bb === null) return 0;
+      if (aa === null) return 1;
+      if (bb === null) return -1;
+      return bb - aa;
+    });
+  } else if (currentSort === 'low') {
+    games.sort((a,b) => {
+      const aa = gameAvg(a.id), bb = gameAvg(b.id);
+      if (aa === null && bb === null) return 0;
+      if (aa === null) return 1;
+      if (bb === null) return -1;
+      return aa - bb;
+    });
+  }
+
+  if (!games.length) {
+    list.innerHTML = `<div style="text-align:center;color:var(--text-light);padding:50px 16px;font-size:13px;">暂无游戏 🎲</div>`;
+    return;
+  }
+
+  games.forEach((g, idx) => {
+    const card = document.createElement('div');
+    card.className = 'game-card';
+
+    const avg = gameAvg(g.id);
+    const status = D.status[g.id] || 'unplayed';
+    const statusLabel = status === 'played' ? '已玩' : '未开';
+    const statusClass = status === 'played' ? 'played' : 'unplayed';
+
+    const tagHtml = g.tag ? `<span style="font-size:10px;color:var(--text-light);background:rgba(0,0,0,0.04);border-radius:6px;padding:2px 6px;border:1px solid var(--border);">${g.tag}</span>` : '';
+
+    let headerHTML = `
+      <div class="card-header">
+        <div class="game-num">${idx+1}</div>
+        <div class="game-title" onclick="openGameThread('${g.id}')">${g.title}</div>
+        ${tagHtml}
+        <span class="play-status ${statusClass}" onclick="toggleStatus('${g.id}',this)">${statusLabel}</span>
+        <span class="avg-badge ${avg===null?'no-score':''}">${avg===null?'待评':'★'+avg.toFixed(1)}</span>
+      </div>
+    `;
+
+    let gridHTML = '<div class="ratings-grid">';
+    PLAYERS.forEach(p => {
+      const val = D.ratings[g.id+'_'+p.key] || 0;
+      const cmts = (D.comments[g.id+'_'+p.key] || []);
+      const hasCmt = cmts.length > 0;
+      gridHTML += `
+        <div class="player-row">
+          <div class="player-info">
+            <span class="player-name">${p.emoji} ${p.name}</span>
+            <button class="comment-dot ${hasCmt?'has':''}" onclick="openCommentInput('${g.id}','${p.key}')"
+              title="写吐槽">${hasCmt ? cmts.length : '＋'}</button>
+          </div>
+          <div class="stars">
+            ${[1,2,3,4,5].map(i =>
+              `<span class="star ${i<=val?'on':''}" onclick="rate('${g.id}','${p.key}',${i})">★</span>`
+            ).join('')}
+          </div>
+        </div>
+      `;
+    });
+    gridHTML += '</div>';
+
+    card.innerHTML = headerHTML + gridHTML + `
+      <div class="card-actions" id="actions_${g.id}">
+        <button class="action-btn" onclick="openEditGame('${g.id}')">
+          <div class="action-icon edit-icon">✏️</div>
+          <span class="action-label">编辑</span>
+        </button>
+        <button class="action-btn" onclick="deleteGame('${g.id}')">
+          <div class="action-icon delete-icon">🗑️</div>
+          <span class="action-label">删除</span>
+        </button>
+        <button class="action-cancel" onclick="hideActions('${g.id}')">取消</button>
+      </div>
+    `;
+
+    // Long press handler
+    let lpTimer = null;
+    const startLP = (e) => {
+      lpTimer = setTimeout(() => {
+        lpTimer = null;
+        document.getElementById('actions_'+g.id).classList.add('show');
+        if (navigator.vibrate) navigator.vibrate(30);
+      }, 500);
+    };
+    const cancelLP = () => { if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; } };
+    card.addEventListener('touchstart', startLP, {passive:true});
+    card.addEventListener('touchend', cancelLP);
+    card.addEventListener('touchmove', cancelLP);
+    // Desktop: right-click or long mousedown
+    card.addEventListener('mousedown', startLP);
+    card.addEventListener('mouseup', cancelLP);
+    card.addEventListener('mouseleave', cancelLP);
+    card.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      document.getElementById('actions_'+g.id).classList.add('show');
+    });
+
+    list.appendChild(card);
+  });
+}
+
+/* ── RATE ── */
+function rate(gid, pkey, val) {
+  D.ratings[gid+'_'+pkey] = val;
+  save(D); setView(currentView);
+  toast(`${PLAYERS.find(p=>p.key===pkey).emoji} ${val} ★`);
+}
+
+/* ── TOGGLE STATUS ── */
+function toggleStatus(gid, el) {
+  const cur = D.status[gid] || 'unplayed';
+  const next = cur === 'played' ? 'unplayed' : 'played';
+  D.status[gid] = next; save(D);
+  el.textContent = next === 'played' ? '已玩' : '未开';
+  el.className = 'play-status ' + (next === 'played' ? 'played' : 'unplayed');
+  toast(next === 'played' ? '✅ 已玩' : '📦 未开');
+}
+
+/* ── CARD ACTIONS (edit / delete) ── */
+function hideActions(gid) {
+  const el = document.getElementById('actions_'+gid);
+  if (el) el.classList.remove('show');
+}
+
+function deleteGame(gid) {
+  const game = allGames().find(g=>g.id===gid);
+  if (!game) return;
+  if (!confirm(`确定要永久删除「${game.title}」吗？\n所有评分和吐槽都会一起删除。`)) {
+    hideActions(gid); return;
+  }
+  // Mark as deleted
+  if (!D.deleted) D.deleted = [];
+  D.deleted.push(gid);
+  // If custom game, also remove from array
+  if (gid.startsWith('c')) {
+    const idx = parseInt(gid.substring(1));
+    if (D.customGames && D.customGames[idx]) D.customGames.splice(idx, 1);
+  }
+  // Clean up associated data
+  PLAYERS.forEach(p => {
+    delete D.ratings[gid+'_'+p.key];
+    delete D.comments[gid+'_'+p.key];
+  });
+  delete D.status[gid];
+  delete (D.edits||{})[gid];
+  save(D);
+  setView(currentView);
+  toast('🗑️ 已删除「' + game.title + '」');
+}
+
+function openEditGame(gid) {
+  hideActions(gid);
+  const game = allGames().find(g=>g.id===gid);
+  if (!game) return;
+  modalCtx = { type:'edit', gameId:gid };
+  document.getElementById('modalTitle').textContent = '✏️ 编辑游戏';
+  document.getElementById('commentInputArea').style.display = 'none';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="edit-form">
+      <div class="edit-field">
+        <label>游戏名称</label>
+        <input id="editNameInput" value="${escHtml(game.title)}" placeholder="输入游戏名称" />
+      </div>
+      <div class="edit-field">
+        <label>标注（如"带扩"、"缺配件"，可留空）</label>
+        <input id="editTagInput" value="${escHtml(game.tag)}" placeholder="可选标注" />
+      </div>
+      <button class="edit-save-btn" onclick="saveEditGame()">保存修改</button>
+    </div>
+  `;
+  openModal();
+}
+
+function saveEditGame() {
+  if (!modalCtx || modalCtx.type !== 'edit') return;
+  const gid = modalCtx.gameId;
+  const newName = document.getElementById('editNameInput').value.trim();
+  if (!newName) { toast('名称不能为空'); return; }
+  const newTag = document.getElementById('editTagInput').value.trim();
+
+  // For custom games, update directly
+  if (gid.startsWith('c')) {
+    const idx = parseInt(gid.substring(1));
+    if (D.customGames && D.customGames[idx]) {
+      D.customGames[idx].title = newName;
+      D.customGames[idx].tag = newTag;
+    }
+  }
+  // Store edits (works for both default and custom)
+  if (!D.edits) D.edits = {};
+  D.edits[gid] = { title: newName, tag: newTag };
+  save(D);
+  closeModal();
+  setView(currentView);
+  toast('✅ 已保存修改');
+}
+
+/* ── MODAL ── */
+function openModal() { document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); modalCtx = null; }
+function closeModalOutside(e) { if (e.target === e.currentTarget) closeModal(); }
+
+/* ── GAME THREAD (Reddit-style all comments) ── */
+function openGameThread(gid) {
+  const game = allGames().find(g=>g.id===gid);
+  if (!game) return;
+  modalCtx = { type:'thread', gameId:gid };
+  document.getElementById('modalTitle').textContent = '💬 ' + game.title + ' 吐槽区';
+  document.getElementById('commentInputArea').style.display = 'none';
+
+  const body = document.getElementById('modalBody');
+  let allCmts = [];
+  PLAYERS.forEach(p => {
+    (D.comments[gid+'_'+p.key]||[]).forEach(c => {
+      allCmts.push({ ...c, playerKey: p.key, player: p });
+    });
+  });
+  allCmts.sort((a,b) => b.ts - a.ts);
+
+  if (!allCmts.length) {
+    body.innerHTML = `<div class="no-comments">还没有人吐槽过这个游戏<br>点每人名字旁边的 ＋ 开始吐槽吧</div>`;
+  } else {
+    body.innerHTML = allCmts.map(c => `
+      <div class="comment-item">
+        <div class="comment-avatar ${c.player.bg}">${c.player.emoji}</div>
+        <div class="comment-content">
+          <span class="comment-author">${c.player.name}</span>
+          <div class="comment-text">${escHtml(c.text)}</div>
+          <span class="comment-time">${fmtTime(c.ts)}
+            <span class="comment-delete" onclick="deleteComment('${gid}','${c.playerKey}',${c.ts})">删除</span>
+          </span>
+        </div>
+      </div>
+    `).join('');
+  }
+  openModal();
+}
+
+/* ── SINGLE PLAYER COMMENT INPUT ── */
+function openCommentInput(gid, pkey) {
+  const game = allGames().find(g=>g.id===gid);
+  const player = PLAYERS.find(p=>p.key===pkey);
+  if (!game||!player) return;
+  modalCtx = { type:'comment', gameId:gid, playerKey:pkey };
+  document.getElementById('modalTitle').textContent = `${player.emoji} ${player.name} 对 ${game.title} 的吐槽`;
+
+  const cmts = D.comments[gid+'_'+pkey] || [];
+  const body = document.getElementById('modalBody');
+  if (!cmts.length) {
+    body.innerHTML = `<div class="no-comments">还没有吐槽，写一条吧！</div>`;
+  } else {
+    body.innerHTML = cmts.slice().reverse().map(c => `
+      <div class="comment-item">
+        <div class="comment-avatar ${player.bg}">${player.emoji}</div>
+        <div class="comment-content">
+          <span class="comment-author">${player.name}</span>
+          <div class="comment-text">${escHtml(c.text)}</div>
+          <span class="comment-time">${fmtTime(c.ts)}
+            <span class="comment-delete" onclick="deleteComment('${gid}','${pkey}',${c.ts})">删除</span>
+          </span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const area = document.getElementById('commentInputArea');
+  area.style.display = 'flex';
+  document.getElementById('commentTextarea').value = '';
+  openModal();
+}
+
+function submitComment() {
+  if (!modalCtx || modalCtx.type !== 'comment') return;
+  const text = document.getElementById('commentTextarea').value.trim();
+  if (!text) return;
+  const key = modalCtx.gameId + '_' + modalCtx.playerKey;
+  if (!D.comments[key]) D.comments[key] = [];
+  D.comments[key].push({ text, ts: Date.now() });
+  save(D);
+  openCommentInput(modalCtx.gameId, modalCtx.playerKey);
+  setView(currentView);
+  toast('💬 吐槽成功');
+}
+
+function deleteComment(gid, pkey, ts) {
+  const key = gid+'_'+pkey;
+  D.comments[key] = (D.comments[key]||[]).filter(c => c.ts !== ts);
+  save(D);
+  // refresh the current modal
+  if (modalCtx) {
+    if (modalCtx.type === 'comment') openCommentInput(gid, pkey);
+    else if (modalCtx.type === 'thread') openGameThread(gid);
+  }
+  setView(currentView);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+/* ── PLAYER PROFILE ── */
+function openPlayerProfile(pkey) {
+  const player = PLAYERS.find(p=>p.key===pkey);
+  if (!player) return;
+  modalCtx = { type:'profile', playerKey:pkey };
+  document.getElementById('modalTitle').textContent = player.emoji + ' ' + player.name + ' 的桌游评分';
+  document.getElementById('commentInputArea').style.display = 'none';
+
+  const games = allGames();
+  const rated = games.map(g => ({
+    title: g.title, tag: g.tag,
+    score: D.ratings[g.id+'_'+pkey] || 0
+  }));
+
+  const scored = rated.filter(r=>r.score>0).sort((a,b)=>b.score-a.score);
+  const unscored = rated.filter(r=>r.score===0);
+
+  const totalRated = scored.length;
+  const avgScore = totalRated ? (scored.reduce((a,b)=>a+b.score,0)/totalRated).toFixed(1) : '—';
+
+  let html = `
+    <div class="profile-header">
+      <div class="profile-emoji">${player.emoji}</div>
+      <div class="profile-name">${player.name}</div>
+      <div class="profile-stat">已评 ${totalRated}/${games.length} 款 · 平均 ${avgScore} ★</div>
+    </div>
+  `;
+
+  if (scored.length) {
+    html += `<div class="profile-section-label">— 已评分（高 → 低）—</div>`;
+    scored.forEach((r, i) => {
+      html += `
+        <div class="profile-game-item">
+          <div class="profile-game-rank">${i+1}</div>
+          <div class="profile-game-name">${r.title}${r.tag?' <span style="font-size:10px;color:var(--text-light);">('+r.tag+')</span>':''}</div>
+          <div class="profile-game-stars">
+            ${[1,2,3,4,5].map(s=>`<span class="${s<=r.score?'on':''}">★</span>`).join('')}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  if (unscored.length) {
+    html += `<div class="profile-section-label">— 未评分 —</div>`;
+    unscored.forEach(r => {
+      html += `
+        <div class="profile-game-item">
+          <div class="profile-game-rank">-</div>
+          <div class="profile-game-name" style="color:var(--text-light);">${r.title}</div>
+          <div class="profile-game-stars" style="opacity:0.3;">★★★★★</div>
+        </div>
+      `;
+    });
+  }
+
+  document.getElementById('modalBody').innerHTML = html;
+  openModal();
+}
+
+/* ── ADD GAME ── */
+function addGame() {
+  const input = document.getElementById('newGameInput');
+  const name = input.value.trim();
+  if (!name) { toast('请输入游戏名称'); return; }
+  if (!D.customGames) D.customGames = [];
+  D.customGames.push({ title: name, tag: '' });
+  save(D); input.value = '';
+  setView(currentView);
+  toast('🎲 已添加「' + name + '」');
+}
+
+/* ── RANKING ── */
+function renderRanking() {
+  const container = document.getElementById('rankingView');
+  container.innerHTML = '';
+  const games = allGames();
+  const scored = games.map(g=>({...g, avg:gameAvg(g.id), scores:PLAYERS.map(p=>({...p,val:D.ratings[g.id+'_'+p.key]||0}))}))
+    .filter(g=>g.avg!==null).sort((a,b)=>b.avg-a.avg);
+
+  if (!scored.length) {
+    container.innerHTML = `<div style="text-align:center;color:var(--text-light);padding:60px 16px;font-size:13px;">还没有评分记录<br>快去评分吧 🎲</div>`;
+    return;
+  }
+
+  scored.forEach((g,i)=>{
+    const pc = i===0?'gold':i===1?'silver':i===2?'bronze':'normal';
+    const ss = g.scores.filter(s=>s.val>0).map(s=>`${s.emoji}${s.val}★`).join('  ');
+    const el = document.createElement('div');
+    el.className = 'rank-item';
+    el.innerHTML = `
+      <div class="rank-pos ${pc}">${i+1}</div>
+      <div class="rank-info">
+        <div class="rank-title">${g.title}</div>
+        <div class="rank-scores">${ss}</div>
+      </div>
+      <div class="rank-avg">★${g.avg.toFixed(1)}</div>
+    `;
+    container.appendChild(el);
+  });
+
+  const unscored = games.filter(g=>gameAvg(g.id)===null);
+  if (unscored.length) {
+    const d = document.createElement('div');
+    d.style.cssText = 'text-align:center;color:var(--text-light);font-size:12px;padding:14px 8px;';
+    d.textContent = `还有 ${unscored.length} 款游戏未评分`;
+    container.appendChild(d);
+  }
+}
+
+/* ── STATS ── */
+function updateStats() {
+  const games = allGames();
+  document.getElementById('sTotal').textContent = games.length;
+  const rated = games.filter(g=>PLAYERS.some(p=>D.ratings[g.id+'_'+p.key]));
+  document.getElementById('sRated').textContent = rated.length;
+  const avgs = games.map(g=>gameAvg(g.id)).filter(v=>v!==null);
+  if (avgs.length) {
+    document.getElementById('sTop').textContent = Math.max(...avgs).toFixed(1);
+    document.getElementById('sAvg').textContent = (avgs.reduce((a,b)=>a+b,0)/avgs.length).toFixed(1);
+  } else {
+    document.getElementById('sTop').textContent = '—';
+    document.getElementById('sAvg').textContent = '—';
+  }
+}
+
+/* ── VIEW ── */
+function setView(view) {
+  currentView = view;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+  const gv = document.getElementById('gameView');
+  const rv = document.getElementById('rankingView');
+  if (view === 'ranked') {
+    gv.classList.add('hidden'); rv.classList.add('active');
+    renderRanking();
+  } else {
+    gv.classList.remove('hidden'); rv.classList.remove('active');
+    renderGames(view);
+  }
+  updateStats();
+}
+
+document.querySelectorAll('.filter-btn').forEach(b => {
+  b.addEventListener('click', () => setView(b.dataset.view));
+});
+
+document.querySelectorAll('.sort-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    currentSort = b.dataset.sort;
+    document.querySelectorAll('.sort-btn').forEach(s => s.classList.toggle('active', s.dataset.sort === currentSort));
+    setView(currentView);
+  });
+});
+
+/* ── RESET ── */
+function confirmReset() {
+  if (confirm('确定要清空所有评分、吐槽、自建游戏吗？\n此操作不可恢复。')) {
+    D = { ratings:{}, status:{}, comments:{}, customGames:[], deleted:[], edits:{} };
+    save(D); setView('all'); toast('已清空所有数据');
+  }
+}
+
+/* ── INIT ── */
+renderPlayersBar();
+setView('all');
+</script>
+</body>
+</html>
