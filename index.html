@@ -880,17 +880,74 @@ const DEFAULT_GAMES = [
 ];
 
 const SK = 'bg_app_v3';
-function load() { try { return JSON.parse(localStorage.getItem(SK)) || {}; } catch(e) { return {}; } }
-function save(d) { try { localStorage.setItem(SK, JSON.stringify(d)); } catch(e) {} }
+
+function normalizeData(d = {}) {
+  if (!d || typeof d !== 'object') d = {};
+  if (!D_SAFE_OBJECT(d.ratings)) d.ratings = {};
+  if (!D_SAFE_OBJECT(d.status)) d.status = {};
+  if (!D_SAFE_OBJECT(d.comments)) d.comments = {};
+  if (!Array.isArray(d.customGames)) d.customGames = [];
+  if (!Array.isArray(d.deleted)) d.deleted = [];
+  if (!D_SAFE_OBJECT(d.edits)) d.edits = {};
+  return d;
+}
+
+function D_SAFE_OBJECT(x) {
+  return x && typeof x === 'object' && !Array.isArray(x);
+}
+
+function load() {
+  try {
+    return normalizeData(JSON.parse(localStorage.getItem(SK)) || {});
+  } catch(e) {
+    return normalizeData({});
+  }
+}
+
+function save(d) {
+  d = normalizeData(d);
+
+  // Keep a local backup on this device.
+  try {
+    localStorage.setItem(SK, JSON.stringify(d));
+  } catch(e) {}
+
+  // If Firebase is ready, also save to the shared cloud database.
+  if (window.firebaseSet && window.firebaseDataRef) {
+    window.firebaseSet(window.firebaseDataRef, d)
+      .catch(err => console.error('Firebase save failed:', err));
+  }
+}
 
 let D = load();
-if (!D.ratings) D.ratings = {};
-if (!D.status) D.status = {};
-if (!D.comments) D.comments = {};
-if (!D.customGames) D.customGames = [];
-if (!D.deleted) D.deleted = [];
-if (!D.edits) D.edits = {};
 save(D);
+
+window.getBoardGameData = function() {
+  return D;
+};
+
+window.applyBoardGameData = function(remoteD) {
+  D = normalizeData(remoteD || {});
+
+  try {
+    localStorage.setItem(SK, JSON.stringify(D));
+  } catch(e) {}
+
+  renderPlayersBar();
+  setView(currentView);
+};
+#const SK = 'bg_app_v3';
+#function load() { try { return JSON.parse(localStorage.getItem(SK)) || {}; } catch(e) { return {}; } }
+#function save(d) { try { localStorage.setItem(SK, JSON.stringify(d)); } catch(e) {} }
+
+#let D = load();
+#if (!D.ratings) D.ratings = {};
+#if (!D.status) D.status = {};
+#if (!D.comments) D.comments = {};
+#if (!D.customGames) D.customGames = [];
+#if (!D.deleted) D.deleted = [];
+#if (!D.edits) D.edits = {};
+#save(D);
 
 function allGames() {
   const custom = (D.customGames||[]).map((g,i) => ({
@@ -1438,12 +1495,27 @@ setView('all');
 
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
+  const dataRef = ref(database, "boardGameData");
 
   window.firebaseDatabase = database;
+  window.firebaseDataRef = dataRef;
   window.firebaseRef = ref;
   window.firebaseSet = set;
   window.firebaseUpdate = update;
   window.firebaseOnValue = onValue;
+
+  onValue(dataRef, (snapshot) => {
+    const cloudData = snapshot.val();
+
+    if (cloudData) {
+      window.applyBoardGameData(cloudData);
+      console.log("Firebase data loaded.");
+    } else {
+      const localData = window.getBoardGameData ? window.getBoardGameData() : {};
+      set(dataRef, localData);
+      console.log("Firebase initialized with local data.");
+    }
+  });
 
   console.log("Firebase connected successfully.");
 </script>
