@@ -1470,6 +1470,7 @@ setView('all');
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
   import { getDatabase, ref, set, update, onValue } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyD3SMd_mxeBEIeMDKzhYDNayeg4pfEC9Kk",
@@ -1484,6 +1485,22 @@ setView('all');
 
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
+  const auth = getAuth(app);
+
+window.currentAuthUser = null;
+window.currentAuthUid = null;
+
+signInAnonymously(auth).catch((error) => {
+  console.error("Anonymous sign-in failed:", error);
+});
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.currentAuthUser = user;
+    window.currentAuthUid = user.uid;
+    console.log("Anonymous signed in:", user.uid);
+  }
+});
   const dataRef = ref(database, "boardGameData");
 
   window.firebaseDatabase = database;
