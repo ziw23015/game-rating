@@ -312,7 +312,9 @@ header p {
 .sort-bar {
   display: flex; align-items: center; gap: 6px;
   padding: 8px 14px;
+  overflow-x: auto; scrollbar-width: none;
 }
+.sort-bar::-webkit-scrollbar { display: none; }
 .sort-label {
   font-size: 11px; color: var(--text-light);
   font-weight: 500; margin-right: 2px; flex-shrink: 0;
@@ -942,6 +944,8 @@ header p {
     <button class="sort-btn" data-sort="az">A-Z</button>
     <button class="sort-btn" data-sort="high">评分↓</button>
     <button class="sort-btn" data-sort="low">评分↑</button>
+    <button class="sort-btn" data-sort="played_first">已玩优先</button>
+    <button class="sort-btn" data-sort="unopened_first">未开优先</button>
   </div>
   <div class="game-list" id="gameList"></div>
   <div class="add-game-section">
@@ -1437,6 +1441,17 @@ function fmtTime(ts) {
   return `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
 }
 
+function compareDefaultOrder(a, b, orderMap) {
+  return (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0);
+}
+
+function statusSortRank(gid, targetStatus) {
+  const hasStatus = Object.prototype.hasOwnProperty.call(D.status || {}, gid);
+  if (hasStatus && D.status[gid] === targetStatus) return 0;
+  if (!hasStatus) return 2;
+  return 1;
+}
+
 /* ── TOAST ── */
 let tt;
 function toast(msg) {
@@ -1458,13 +1473,17 @@ function renderGames(filter) {
   const list = document.getElementById('gameList');
   list.innerHTML = '';
   let games = allGames();
+  const defaultOrder = new Map(games.map((g, idx) => [g.id, idx]));
 
   if (filter === 'unrated') games = games.filter(g => PLAYERS.every(p => !D.ratings[g.id+'_'+p.key]));
   else if (filter === 'rated') games = games.filter(g => PLAYERS.some(p => D.ratings[g.id+'_'+p.key]));
 
   // Apply sort
   if (currentSort === 'az') {
-    games.sort((a,b) => a.title.localeCompare(b.title, 'zh-CN'));
+    games.sort((a,b) => {
+      const cmp = a.title.localeCompare(b.title, 'zh-CN');
+      return cmp || compareDefaultOrder(a, b, defaultOrder);
+    });
   } else if (currentSort === 'high') {
     games.sort((a,b) => {
       const aa = gameAvg(a.id), bb = gameAvg(b.id);
@@ -1480,6 +1499,20 @@ function renderGames(filter) {
       if (aa === null) return 1;
       if (bb === null) return -1;
       return aa - bb;
+    });
+  } else if (currentSort === 'played_first') {
+    games.sort((a,b) => {
+      const ra = statusSortRank(a.id, 'played');
+      const rb = statusSortRank(b.id, 'played');
+      if (ra !== rb) return ra - rb;
+      return compareDefaultOrder(a, b, defaultOrder);
+    });
+  } else if (currentSort === 'unopened_first') {
+    games.sort((a,b) => {
+      const ra = statusSortRank(a.id, 'unplayed');
+      const rb = statusSortRank(b.id, 'unplayed');
+      if (ra !== rb) return ra - rb;
+      return compareDefaultOrder(a, b, defaultOrder);
     });
   }
 
@@ -1582,7 +1615,15 @@ function renderGames(filter) {
 
 /* ── RATE ── */
 function rate(gid, pkey, val) {
-  D.ratings[gid+'_'+pkey] = val;
+  const key = gid+'_'+pkey;
+  const current = Number(D.ratings[key] || 0);
+  if (current === val) {
+    delete D.ratings[key];
+    save(D); setView(currentView);
+    toast('已清除评分');
+    return;
+  }
+  D.ratings[key] = val;
   save(D); setView(currentView);
   toast(`${PLAYERS.find(p=>p.key===pkey).emoji} ${val} ★`);
 }
