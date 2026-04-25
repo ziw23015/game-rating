@@ -546,11 +546,24 @@ header p {
 }
 
 /* Comment thread */
-.comment-item {
-  display: flex; gap: 10px; padding: 10px 0;
+.comment-node {
+  padding: 10px 0;
   border-bottom: 1px solid rgba(180,195,210,0.5);
 }
-.comment-item:last-child { border-bottom: none; }
+.comment-node:last-child { border-bottom: none; }
+.comment-node.reply-node {
+  padding: 8px 0 0;
+  border-bottom: none;
+}
+.comment-item {
+  display: flex; gap: 10px;
+}
+.comment-item.owner {
+  background: rgba(94,122,146,0.08);
+  border: 1px solid rgba(94,122,146,0.16);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
 .comment-avatar {
   width: 32px; height: 32px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -562,15 +575,45 @@ header p {
 .comment-avatar.xin { background: rgba(130,155,175,0.2); }
 .comment-avatar.guest { background: rgba(126,148,168,0.16); color: var(--blue-deep); }
 
-.comment-content { flex: 1; }
+.comment-content { flex: 1; min-width: 0; }
 .comment-text { font-size: 13px; color: var(--text-dark); margin-top: 3px; line-height: 1.5; }
 .comment-author-inline { font-weight: 700; color: var(--text-mid); }
-.comment-time { font-size: 10px; color: var(--text-light); margin-top: 4px; }
-.comment-delete {
-  font-size: 10px; color: var(--rose); cursor: pointer;
-  margin-left: 8px; opacity: 0.6;
+.comment-author-inline.owner { color: var(--blue-deep); }
+.comment-meta-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; margin-top: 6px;
 }
-.comment-delete:active { opacity: 1; }
+.comment-meta-left {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; min-width: 0;
+}
+.comment-time { font-size: 10px; color: var(--text-light); }
+.comment-action-btn {
+  border: none; background: none; padding: 0;
+  font-size: 10px; color: var(--text-light);
+  cursor: pointer; font-family: 'Noto Sans SC', sans-serif;
+}
+.comment-action-btn:active { opacity: 0.7; }
+.comment-reply-btn { color: var(--blue-deep); }
+.comment-delete { color: var(--rose); }
+.comment-like-btn {
+  border: none; background: none; padding: 0;
+  display: inline-flex; align-items: center; gap: 4px;
+  cursor: pointer; color: var(--text-light);
+  font-family: 'Noto Sans SC', sans-serif;
+  flex-shrink: 0;
+}
+.comment-like-btn:active { transform: scale(0.96); }
+.comment-like-btn.liked { color: var(--rose); }
+.comment-like-icon { font-size: 13px; line-height: 1; }
+.comment-like-count { font-size: 10px; font-weight: 600; }
+.comment-children {
+  margin-left: 18px; margin-top: 8px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(180,195,210,0.55);
+  background: rgba(255,255,255,0.28);
+  border-radius: 0 12px 12px 0;
+}
 .read-only-tip {
   margin-top: 14px; padding: 10px 12px;
   border-radius: 12px; border: 1px dashed var(--border);
@@ -586,8 +629,19 @@ header p {
 /* Comment input */
 .comment-input-area {
   padding: 12px 18px; border-top: 1px solid var(--border);
-  display: flex; gap: 8px; align-items: flex-end;
+  display: flex; flex-direction: column; gap: 8px;
   background: rgba(255,255,255,0.5);
+}
+.comment-reply-state {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  padding: 0 2px;
+}
+.comment-reply-label {
+  font-size: 11px; color: var(--blue-deep); font-weight: 600;
+}
+.comment-input-row {
+  display: flex; gap: 8px; align-items: flex-end;
 }
 .comment-textarea {
   flex: 1; border: 1px solid var(--border);
@@ -969,8 +1023,14 @@ header p {
     </div>
     <div class="modal-body" id="modalBody"></div>
     <div class="comment-input-area" id="commentInputArea" style="display:none;">
-      <textarea class="comment-textarea" id="commentTextarea" placeholder="说点什么…" rows="1"></textarea>
-      <button class="comment-send" onclick="submitComment()">↑</button>
+      <div class="comment-reply-state" id="commentReplyState" style="display:none;">
+        <span class="comment-reply-label" id="commentReplyLabel"></span>
+        <button class="comment-action-btn comment-reply-btn" onclick="cancelReplyMode()">取消回复</button>
+      </div>
+      <div class="comment-input-row">
+        <textarea class="comment-textarea" id="commentTextarea" placeholder="以当前身份回复..." rows="1"></textarea>
+        <button class="comment-send" onclick="submitComment()">↑</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1221,10 +1281,121 @@ function getCommentBucketKeyForIdentity(gid, identity = currentIdentity) {
   return `${gid}_guest_${identity.guestId}`;
 }
 
+function makeCommentId() {
+  return 'cmt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function getCommentId(comment) {
+  return String(comment && comment.id ? comment.id : '');
+}
+
+function getCurrentIdentityActorKey(identity = currentIdentity) {
+  if (!identity) return null;
+  if (identity.type === 'fixed') return `fixed:${identity.playerKey}`;
+  return `guest:${identity.guestId}`;
+}
+
+function buildCurrentLikePayload(identity = currentIdentity) {
+  if (!identity) return null;
+  if (identity.type === 'fixed') {
+    return {
+      displayName: identity.displayName,
+      playerKey: identity.playerKey,
+      role: 'fixed',
+      isGuest: false,
+      uid: identity.authUid || null,
+      likedAt: Date.now(),
+    };
+  }
+  return {
+    displayName: identity.displayName,
+    role: 'guest',
+    isGuest: true,
+    guestId: identity.guestId,
+    uid: identity.authUid || null,
+    likedAt: Date.now(),
+  };
+}
+
+function getCommentTimestamp(comment) {
+  return Number(comment && (comment.createdAt ?? comment.ts) || 0);
+}
+
+function normalizeStoredComment(comment, index) {
+  let normalized = D_SAFE_OBJECT(comment) ? { ...comment } : { text: String(comment ?? '') };
+  let changed = !D_SAFE_OBJECT(comment);
+
+  if (typeof normalized.text !== 'string') {
+    normalized.text = String(normalized.text ?? '');
+    changed = true;
+  }
+
+  const timestamp = getCommentTimestamp(normalized) || (Date.now() + index);
+
+  if (!normalized.id) {
+    normalized.id = makeCommentId();
+    changed = true;
+  }
+  if (!(Number(normalized.createdAt) > 0)) {
+    normalized.createdAt = timestamp;
+    changed = true;
+  }
+  if (!(Number(normalized.ts) > 0)) {
+    normalized.ts = Number(normalized.createdAt) || timestamp;
+    changed = true;
+  }
+
+  const parentId = typeof normalized.parentId === 'string' && normalized.parentId
+    ? normalized.parentId
+    : (typeof normalized.replyTo === 'string' && normalized.replyTo ? normalized.replyTo : '');
+  if (parentId) {
+    if (normalized.parentId !== parentId) {
+      normalized.parentId = parentId;
+      changed = true;
+    }
+    if (normalized.replyTo !== parentId) {
+      normalized.replyTo = parentId;
+      changed = true;
+    }
+  }
+
+  if (!D_SAFE_OBJECT(normalized.likes)) {
+    normalized.likes = {};
+    changed = true;
+  } else {
+    const likes = {};
+    let likesChanged = false;
+    Object.entries(normalized.likes).forEach(([key, value]) => {
+      if (!key) return;
+      if (D_SAFE_OBJECT(value)) likes[key] = value;
+      else {
+        likes[key] = { likedAt: timestamp };
+        likesChanged = true;
+      }
+    });
+    if (likesChanged) {
+      normalized.likes = likes;
+      changed = true;
+    }
+  }
+
+  return { normalized, changed };
+}
+
 function getCommentsForBucket(bucketKey) {
   if (!bucketKey) return [];
   const comments = D && D.comments ? D.comments[bucketKey] : null;
-  return Array.isArray(comments) ? comments : [];
+  if (!Array.isArray(comments)) return [];
+
+  let changed = false;
+  const normalized = comments.map((comment, index) => {
+    const result = normalizeStoredComment(comment, index);
+    if (result.changed) changed = true;
+    return result.normalized;
+  });
+
+  if (changed) D.comments[bucketKey] = normalized;
+  return changed ? D.comments[bucketKey] : comments;
 }
 
 function getCommentCountForIdentity(gid, identity = currentIdentity) {
@@ -1232,8 +1403,15 @@ function getCommentCountForIdentity(gid, identity = currentIdentity) {
   return bucketKey ? getCommentsForBucket(bucketKey).length : 0;
 }
 
-function getCommentTimestamp(comment) {
-  return Number(comment && (comment.createdAt ?? comment.ts) || 0);
+function compareCommentsAsc(a, b) {
+  const ta = getCommentTimestamp(a);
+  const tb = getCommentTimestamp(b);
+  if (ta !== tb) return ta - tb;
+  return getCommentId(a).localeCompare(getCommentId(b));
+}
+
+function isGuestComment(comment) {
+  return !!(comment && (comment.isGuest === true || comment.role === 'guest' || comment.authorType === 'guest'));
 }
 
 function getCommentAuthorMeta(comment, bucketKey) {
@@ -1241,31 +1419,51 @@ function getCommentAuthorMeta(comment, bucketKey) {
   if (playerKey) {
     const player = PLAYERS.find(p => p.key === playerKey);
     if (player) {
-      return { label: player.name, emoji: player.emoji, bg: player.bg };
+      return { label: player.name, baseLabel: player.name, emoji: player.emoji, bg: player.bg, isGuest: false };
     }
   }
 
-  const isGuest = !!(comment && (comment.isGuest === true || comment.role === 'guest' || comment.authorType === 'guest'));
-  if (isGuest) {
+  if (isGuestComment(comment)) {
     const guestName = comment.displayName || comment.authorName || '游客';
-    return { label: `${guestName}（游客）`, emoji: GUEST_EMOJI, bg: GUEST_BG };
+    return { label: `${guestName}（游客）`, baseLabel: `${guestName}（游客）`, emoji: GUEST_EMOJI, bg: GUEST_BG, isGuest: true };
   }
 
   const parts = bucketKey.split('_');
   const bucketPlayerKey = parts[1];
   const player = PLAYERS.find(p => p.key === bucketPlayerKey);
   if (player) {
-    return { label: player.name, emoji: player.emoji, bg: player.bg };
+    return { label: player.name, baseLabel: player.name, emoji: player.emoji, bg: player.bg, isGuest: false };
   }
 
-  return { label: '游客', emoji: GUEST_EMOJI, bg: GUEST_BG };
+  return { label: '游客', baseLabel: '游客', emoji: GUEST_EMOJI, bg: GUEST_BG, isGuest: true };
+}
+
+function isThreadOwnerComment(comment, bucketKey, threadOwner) {
+  if (!threadOwner) return false;
+
+  if (threadOwner.type === 'fixed') {
+    const commentPlayerKey = comment && (comment.playerKey || comment.authorKey);
+    if (commentPlayerKey) return commentPlayerKey === threadOwner.playerKey;
+    const parts = bucketKey.split('_');
+    return parts[1] === threadOwner.playerKey;
+  }
+
+  if (!isGuestComment(comment) && !(bucketKey && bucketKey.includes('_guest_'))) return false;
+
+  const guestId = comment && (comment.guestId || comment.authorGuestId);
+  if (guestId && threadOwner.guestId) return guestId === threadOwner.guestId;
+
+  const uid = comment && (comment.uid || comment.authorUid);
+  if (uid && threadOwner.authUid) return uid === threadOwner.authUid;
+
+  return !!(threadOwner.guestId && bucketKey.endsWith(`_guest_${threadOwner.guestId}`) && !(comment && (comment.playerKey || comment.authorKey)));
 }
 
 function canCurrentIdentityDeleteComment(comment, bucketKey) {
   if (!currentIdentity) return false;
 
   const commentPlayerKey = comment && (comment.playerKey || comment.authorKey);
-  const isGuest = !!(comment && (comment.isGuest === true || comment.role === 'guest' || comment.authorType === 'guest'));
+  const isGuest = isGuestComment(comment);
   const ownerUid = comment && (comment.uid || comment.authorUid);
   const ownerGuestId = comment && (comment.guestId || comment.authorGuestId);
 
@@ -1283,70 +1481,274 @@ function canCurrentIdentityDeleteComment(comment, bucketKey) {
   return parts[1] === currentIdentity.playerKey;
 }
 
-function renderCommentItem(comment, bucketKey) {
+function getLikeCount(comment) {
+  return D_SAFE_OBJECT(comment && comment.likes) ? Object.keys(comment.likes).length : 0;
+}
+
+function hasCurrentIdentityLiked(comment) {
+  const actorKey = getCurrentIdentityActorKey();
+  return !!(actorKey && D_SAFE_OBJECT(comment && comment.likes) && comment.likes[actorKey]);
+}
+
+function buildCommentTree(comments) {
+  const sorted = comments.slice().sort(compareCommentsAsc);
+  const nodes = new Map();
+
+  sorted.forEach(comment => {
+    const bucketKey = comment.bucketKey;
+    nodes.set(`${bucketKey}::${getCommentId(comment)}`, { comment, bucketKey, children: [] });
+  });
+
+  const roots = [];
+  sorted.forEach(comment => {
+    const bucketKey = comment.bucketKey;
+    const node = nodes.get(`${bucketKey}::${getCommentId(comment)}`);
+    const parentId = typeof comment.parentId === 'string' && comment.parentId
+      ? comment.parentId
+      : (typeof comment.replyTo === 'string' && comment.replyTo ? comment.replyTo : '');
+    const parent = parentId ? nodes.get(`${bucketKey}::${parentId}`) : null;
+    if (parent) parent.children.push(node);
+    else roots.push(node);
+  });
+
+  return roots;
+}
+
+function renderCommentNode(node, options = {}, depth = 0) {
+  const { comment, bucketKey, children } = node;
   const meta = getCommentAuthorMeta(comment, bucketKey);
+  const isOwner = isThreadOwnerComment(comment, bucketKey, options.threadOwner || null);
+  const authorLabel = isOwner ? `${meta.baseLabel}（楼主）` : meta.label;
   const timestamp = getCommentTimestamp(comment);
+  const likeCount = getLikeCount(comment);
+  const liked = hasCurrentIdentityLiked(comment);
   const deleteHtml = canCurrentIdentityDeleteComment(comment, bucketKey)
-    ? `<span class="comment-delete" onclick="deleteComment('${bucketKey}',${timestamp})">删除</span>`
+    ? `<button class="comment-action-btn comment-delete" onclick="deleteComment('${bucketKey}','${getCommentId(comment)}')">删除</button>`
     : '';
+  const childrenHtml = children.length
+    ? `<div class="comment-children">${children.map(child => renderCommentNode(child, options, depth + 1)).join('')}</div>`
+    : '';
+
   return `
-    <div class="comment-item">
-      <div class="comment-avatar ${meta.bg}">${meta.emoji}</div>
-      <div class="comment-content">
-        <div class="comment-text"><span class="comment-author-inline">${escHtml(meta.label)}：</span>${escHtml(comment && comment.text)}</div>
-        <span class="comment-time">${fmtTime(timestamp)}
-          ${deleteHtml}
-        </span>
+    <div class="comment-node ${depth ? 'reply-node' : ''}">
+      <div class="comment-item ${isOwner ? 'owner' : ''}">
+        <div class="comment-avatar ${meta.bg}">${meta.emoji}</div>
+        <div class="comment-content">
+          <div class="comment-text"><span class="comment-author-inline ${isOwner ? 'owner' : ''}">${escHtml(authorLabel)}：</span>${escHtml(comment && comment.text)}</div>
+          <div class="comment-meta-row">
+            <div class="comment-meta-left">
+              <span class="comment-time">${fmtTime(timestamp)}</span>
+              <button class="comment-action-btn comment-reply-btn" onclick="startReplyToComment('${bucketKey}','${getCommentId(comment)}')">回复</button>
+              ${deleteHtml}
+            </div>
+            <button class="comment-like-btn ${liked ? 'liked' : ''}" onclick="toggleCommentLike('${bucketKey}','${getCommentId(comment)}')">
+              <span class="comment-like-icon">${liked ? '♥' : '♡'}</span>
+              <span class="comment-like-count">${likeCount}</span>
+            </button>
+          </div>
+        </div>
       </div>
+      ${childrenHtml}
     </div>
   `;
+}
+
+function renderCommentThread(comments, options = {}) {
+  const nodes = buildCommentTree(comments);
+  return nodes.map(node => renderCommentNode(node, options)).join('');
+}
+
+function updateCommentInputState() {
+  const area = document.getElementById('commentInputArea');
+  const textarea = document.getElementById('commentTextarea');
+  const replyState = document.getElementById('commentReplyState');
+  const replyLabel = document.getElementById('commentReplyLabel');
+  if (!area || !textarea || !replyState || !replyLabel) return;
+
+  if (!modalCtx || (modalCtx.type !== 'comment' && modalCtx.type !== 'thread')) {
+    area.style.display = 'none';
+    return;
+  }
+
+  const allowInput = modalCtx.type === 'comment'
+    ? !!(modalCtx.options && modalCtx.options.allowInput)
+    : !!currentIdentity;
+
+  if (!allowInput) {
+    area.style.display = 'none';
+    replyState.style.display = 'none';
+    return;
+  }
+
+  area.style.display = 'flex';
+  if (modalCtx.replyTo) {
+    replyState.style.display = 'flex';
+    replyLabel.textContent = `回复 ${modalCtx.replyTo.label}`;
+    textarea.placeholder = `回复 ${modalCtx.replyTo.label}...`;
+  } else {
+    replyState.style.display = 'none';
+    textarea.placeholder = modalCtx.inputPlaceholder || '以当前身份回复...';
+  }
+}
+
+function scrollModalBodyToBottom() {
+  const body = document.getElementById('modalBody');
+  if (!body) return;
+  requestAnimationFrame(() => {
+    body.scrollTop = body.scrollHeight;
+  });
+}
+
+function renderCommentBucketModal(options = {}) {
+  if (!modalCtx || modalCtx.type !== 'comment') return;
+  const comments = getCommentsForBucket(modalCtx.bucketKey).map(comment => ({ ...comment, bucketKey: modalCtx.bucketKey }));
+  const body = document.getElementById('modalBody');
+  let html = '';
+
+  if (!comments.length) {
+    html = `<div class="no-comments">${modalCtx.options.emptyText || '还没有吐槽，写一条吧！'}</div>`;
+  } else {
+    html = renderCommentThread(comments, { threadOwner: modalCtx.threadOwner || null });
+  }
+
+  if (!(modalCtx.options && modalCtx.options.allowInput) && modalCtx.options && modalCtx.options.readOnlyHint) {
+    html += `<div class="read-only-tip">${escHtml(modalCtx.options.readOnlyHint)}</div>`;
+  }
+  body.innerHTML = html;
+
+  if (options.resetInput) {
+    const textarea = document.getElementById('commentTextarea');
+    if (textarea) textarea.value = '';
+  }
+  updateCommentInputState();
+  if (options.stickToBottom) scrollModalBodyToBottom();
+}
+
+function renderGameThreadModal(options = {}) {
+  if (!modalCtx || modalCtx.type !== 'thread') return;
+  const body = document.getElementById('modalBody');
+  let allCmts = [];
+
+  Object.keys(D.comments || {}).forEach(bucketKey => {
+    if (!bucketKey.startsWith(modalCtx.gameId + '_')) return;
+    getCommentsForBucket(bucketKey).forEach(comment => {
+      allCmts.push({ ...comment, bucketKey });
+    });
+  });
+
+  allCmts.sort(compareCommentsAsc);
+
+  if (!allCmts.length) {
+    body.innerHTML = `<div class="no-comments">还没有人吐槽过这个游戏<br>点卡片下方的「当前身份吐槽」开始吐槽吧</div>`;
+  } else {
+    body.innerHTML = renderCommentThread(allCmts);
+  }
+
+  if (options.resetInput) {
+    const textarea = document.getElementById('commentTextarea');
+    if (textarea) textarea.value = '';
+  }
+  updateCommentInputState();
+  if (options.stickToBottom) scrollModalBodyToBottom();
+}
+
+function refreshCommentModal(options = {}) {
+  if (!modalCtx) return;
+  if (modalCtx.type === 'comment') renderCommentBucketModal(options);
+  else if (modalCtx.type === 'thread') renderGameThreadModal(options);
 }
 
 function openCommentBucket(gid, bucketKey, options = {}) {
   const game = allGames().find(g => g.id === gid);
   if (!game) return;
 
-  modalCtx = { type:'comment', gameId: gid, bucketKey, options };
+  modalCtx = {
+    type:'comment',
+    gameId: gid,
+    bucketKey,
+    options,
+    threadOwner: options.threadOwner || null,
+    inputPlaceholder: options.placeholder || '以当前身份回复...',
+    replyTo: null,
+  };
   document.getElementById('modalTitle').textContent = options.title || `💬 ${game.title} 吐槽`;
-
-  const comments = getCommentsForBucket(bucketKey);
-  const body = document.getElementById('modalBody');
-  let html = '';
-
-  if (!comments.length) {
-    html = `<div class="no-comments">${options.emptyText || '还没有吐槽，写一条吧！'}</div>`;
-  } else {
-    html = comments.slice().reverse().map(comment => renderCommentItem(comment, bucketKey)).join('');
-  }
-
-  if (!options.allowInput && options.readOnlyHint) {
-    html += `<div class="read-only-tip">${escHtml(options.readOnlyHint)}</div>`;
-  }
-  body.innerHTML = html;
-
-  const area = document.getElementById('commentInputArea');
-  const textarea = document.getElementById('commentTextarea');
-  if (options.allowInput) {
-    area.style.display = 'flex';
-    textarea.value = '';
-    textarea.placeholder = options.placeholder || '说点什么…';
-  } else {
-    area.style.display = 'none';
-  }
-
+  renderCommentBucketModal({ resetInput: true, stickToBottom: true });
   openModal();
 }
 
-function buildCommentPayload(text) {
+function setReplyMode(replyTo) {
+  if (!modalCtx || (modalCtx.type !== 'comment' && modalCtx.type !== 'thread')) return;
+  modalCtx.replyTo = replyTo || null;
+  updateCommentInputState();
+  const textarea = document.getElementById('commentTextarea');
+  if (textarea) textarea.focus();
+}
+
+function cancelReplyMode() {
+  setReplyMode(null);
+}
+
+function startReplyToComment(bucketKey, commentId) {
+  if (!currentIdentity) {
+    openIdentityModal();
+    return;
+  }
+  const comment = getCommentsForBucket(bucketKey).find(item => getCommentId(item) === commentId);
+  if (!comment) return;
+  const meta = getCommentAuthorMeta(comment, bucketKey);
+  setReplyMode({
+    id: getCommentId(comment),
+    bucketKey,
+    label: meta.baseLabel || meta.label,
+  });
+}
+
+function toggleCommentLike(bucketKey, commentId) {
+  if (!currentIdentity) {
+    openIdentityModal();
+    return;
+  }
+  const actorKey = getCurrentIdentityActorKey();
+  if (!actorKey) return;
+
+  const comment = getCommentsForBucket(bucketKey).find(item => getCommentId(item) === commentId);
+  if (!comment) return;
+  if (!D_SAFE_OBJECT(comment.likes)) comment.likes = {};
+
+  if (comment.likes[actorKey]) {
+    delete comment.likes[actorKey];
+    toast('已取消喜欢');
+  } else {
+    comment.likes[actorKey] = buildCurrentLikePayload();
+    toast('已喜欢');
+  }
+
+  save(D);
+  refreshCommentModal();
+}
+
+function buildCommentPayload(text, options = {}) {
   const createdAt = Date.now();
-  if (!currentIdentity) return { text, createdAt, ts: createdAt };
+  const id = makeCommentId();
+  const parentId = typeof options.parentId === 'string' && options.parentId ? options.parentId : null;
+
+  if (!currentIdentity) {
+    const payload = { id, text, createdAt, ts: createdAt, likes: {} };
+    if (parentId) {
+      payload.parentId = parentId;
+      payload.replyTo = parentId;
+    }
+    return payload;
+  }
 
   if (currentIdentity.type === 'fixed') {
     const player = getIdentityPlayer(currentIdentity);
-    return {
+    const payload = {
+      id,
       text,
       createdAt,
       ts: createdAt,
+      likes: {},
       displayName: player ? player.name : currentIdentity.displayName,
       playerKey: player ? player.key : currentIdentity.playerKey,
       role: 'fixed',
@@ -1359,12 +1761,19 @@ function buildCommentPayload(text) {
       authorBg: player ? player.bg : '',
       authorUid: currentIdentity.authUid || null,
     };
+    if (parentId) {
+      payload.parentId = parentId;
+      payload.replyTo = parentId;
+    }
+    return payload;
   }
 
-  return {
+  const payload = {
+    id,
     text,
     createdAt,
     ts: createdAt,
+    likes: {},
     displayName: currentIdentity.displayName,
     role: 'guest',
     isGuest: true,
@@ -1377,6 +1786,11 @@ function buildCommentPayload(text) {
     authorGuestId: currentIdentity.guestId,
     authorUid: currentIdentity.authUid || null,
   };
+  if (parentId) {
+    payload.parentId = parentId;
+    payload.replyTo = parentId;
+  }
+  return payload;
 }
 
 window.attachIdentityAuthUid = attachIdentityAuthUid;
@@ -1787,34 +2201,14 @@ function closeModalOutside(e) { if (e.target === e.currentTarget) closeModal(); 
 function openGameThread(gid) {
   const game = allGames().find(g=>g.id===gid);
   if (!game) return;
-  modalCtx = { type:'thread', gameId:gid };
+  modalCtx = {
+    type:'thread',
+    gameId:gid,
+    inputPlaceholder:'以当前身份回复...',
+    replyTo:null,
+  };
   document.getElementById('modalTitle').textContent = '💬 ' + game.title + ' 吐槽区';
-
-  const body = document.getElementById('modalBody');
-  let allCmts = [];
-  Object.entries(D.comments || {}).forEach(([bucketKey, comments]) => {
-    if (!bucketKey.startsWith(gid + '_') || !Array.isArray(comments)) return;
-    comments.forEach(comment => {
-      allCmts.push({ ...comment, bucketKey });
-    });
-  });
-  allCmts.sort((a,b) => getCommentTimestamp(b) - getCommentTimestamp(a));
-
-  if (!allCmts.length) {
-    body.innerHTML = `<div class="no-comments">还没有人吐槽过这个游戏<br>点卡片下方的「当前身份吐槽」开始吐槽吧</div>`;
-  } else {
-    body.innerHTML = allCmts.map(c => renderCommentItem(c, c.bucketKey)).join('');
-  }
-
-  const area = document.getElementById('commentInputArea');
-  const textarea = document.getElementById('commentTextarea');
-  if (currentIdentity) {
-    area.style.display = 'flex';
-    textarea.value = '';
-    textarea.placeholder = `以${getIdentityLabel()}身份说点什么…`;
-  } else {
-    area.style.display = 'none';
-  }
+  renderGameThreadModal({ resetInput: true, stickToBottom: true });
   openModal();
 }
 
@@ -1831,7 +2225,8 @@ function openIdentityCommentInput(gid) {
     title: `${getIdentityHeading()} 对 ${game.title} 的吐槽`,
     allowInput: true,
     emptyText: '还没有吐槽，写一条吧！',
-    placeholder: `以${getIdentityLabel()}身份说点什么…`,
+    placeholder: '以当前身份回复...',
+    threadOwner: { ...currentIdentity },
   });
 }
 
@@ -1848,7 +2243,12 @@ function openCommentInput(gid, pkey) {
     allowInput: canWrite,
     emptyText: canWrite ? '还没有吐槽，写一条吧！' : `${player.name} 还没有吐槽`,
     readOnlyHint,
-    placeholder: canWrite ? `以${getIdentityLabel()}身份回复…` : '说点什么…',
+    placeholder: '以当前身份回复...',
+    threadOwner: {
+      type: 'fixed',
+      playerKey: pkey,
+      displayName: player.name,
+    },
   });
 }
 
@@ -1861,32 +2261,55 @@ function submitComment() {
   }
   const text = document.getElementById('commentTextarea').value.trim();
   if (!text) return;
-  const key = modalCtx.type === 'comment'
-    ? modalCtx.bucketKey
-    : getCommentBucketKeyForIdentity(modalCtx.gameId);
+  const replyTo = modalCtx.replyTo || null;
+  const key = replyTo
+    ? replyTo.bucketKey
+    : (modalCtx.type === 'comment'
+        ? modalCtx.bucketKey
+        : getCommentBucketKeyForIdentity(modalCtx.gameId));
   if (!key) return;
   if (!D.comments[key]) D.comments[key] = [];
-  D.comments[key].push(buildCommentPayload(text));
+  D.comments[key].push(buildCommentPayload(text, {
+    parentId: replyTo ? replyTo.id : null,
+  }));
+  modalCtx.replyTo = null;
   save(D);
-  if (modalCtx.type === 'comment') {
-    openCommentBucket(modalCtx.gameId, modalCtx.bucketKey, modalCtx.options);
-  } else {
-    openGameThread(modalCtx.gameId);
-  }
+  refreshCommentModal({ resetInput: true, stickToBottom: true });
   setView(currentView);
-  toast('💬 吐槽成功');
+  toast(replyTo ? '💬 回复成功' : '💬 吐槽成功');
 }
 
-function deleteComment(key, ts) {
-  D.comments[key] = (D.comments[key]||[]).filter(c => getCommentTimestamp(c) !== ts);
-  if (!D.comments[key].length) delete D.comments[key];
-  save(D);
-  // refresh the current modal
-  if (modalCtx) {
-    if (modalCtx.type === 'comment') openCommentBucket(modalCtx.gameId, modalCtx.bucketKey, modalCtx.options);
-    else if (modalCtx.type === 'thread') openGameThread(modalCtx.gameId);
+function collectCommentDescendantIds(comments, commentId) {
+  const ids = new Set([commentId]);
+  let expanded = true;
+  while (expanded) {
+    expanded = false;
+    comments.forEach(comment => {
+      const parentId = typeof comment.parentId === 'string' && comment.parentId
+        ? comment.parentId
+        : (typeof comment.replyTo === 'string' && comment.replyTo ? comment.replyTo : '');
+      const currentId = getCommentId(comment);
+      if (parentId && ids.has(parentId) && currentId && !ids.has(currentId)) {
+        ids.add(currentId);
+        expanded = true;
+      }
+    });
   }
+  return ids;
+}
+
+function deleteComment(key, commentId) {
+  const comments = getCommentsForBucket(key);
+  const idsToDelete = collectCommentDescendantIds(comments, commentId);
+  D.comments[key] = comments.filter(comment => !idsToDelete.has(getCommentId(comment)));
+  if (!D.comments[key].length) delete D.comments[key];
+  if (modalCtx && modalCtx.replyTo && idsToDelete.has(modalCtx.replyTo.id)) {
+    modalCtx.replyTo = null;
+  }
+  save(D);
+  refreshCommentModal();
   setView(currentView);
+  toast('已删除吐槽');
 }
 
 function escHtml(s) {
