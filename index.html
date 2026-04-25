@@ -936,18 +936,7 @@ window.applyBoardGameData = function(remoteD) {
   renderPlayersBar();
   setView(currentView);
 };
-#const SK = 'bg_app_v3';
-#function load() { try { return JSON.parse(localStorage.getItem(SK)) || {}; } catch(e) { return {}; } }
-#function save(d) { try { localStorage.setItem(SK, JSON.stringify(d)); } catch(e) {} }
 
-#let D = load();
-#if (!D.ratings) D.ratings = {};
-#if (!D.status) D.status = {};
-#if (!D.comments) D.comments = {};
-#if (!D.customGames) D.customGames = [];
-#if (!D.deleted) D.deleted = [];
-#if (!D.edits) D.edits = {};
-#save(D);
 
 function allGames() {
   const custom = (D.customGames||[]).map((g,i) => ({
