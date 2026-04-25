@@ -275,7 +275,38 @@ header p {
   cursor: pointer; transition: all 0.15s;
   font-weight: 500;
 }
+.player-chip.active {
+  background: rgba(126,148,168,0.18);
+  border-color: rgba(94,122,146,0.45);
+  color: var(--text-dark);
+}
 .player-chip:active { transform: scale(0.95); background: rgba(255,255,255,0.7); }
+
+.identity-bar {
+  display: flex; gap: 8px; justify-content: center; align-items: center;
+  flex-wrap: wrap; padding: 0 16px 12px;
+}
+.identity-current {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 20px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.42);
+  font-size: 12px; color: var(--text-mid);
+}
+.identity-badge-label { color: var(--text-light); font-size: 11px; }
+.identity-badge-name { font-weight: 700; color: var(--text-dark); }
+.identity-switch-btn {
+  padding: 6px 12px; border-radius: 18px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.3);
+  color: var(--text-mid); font-size: 11px;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+}
+.identity-switch-btn:active {
+  background: rgba(94,122,146,0.14);
+  color: var(--blue-deep);
+}
 
 /* ── SORT BAR ── */
 .sort-bar {
@@ -436,6 +467,26 @@ header p {
 .comment-dot:active { transform: scale(1.2); opacity: 1; }
 .comment-dot.has { opacity: 1; background: var(--blue-deep); }
 
+.identity-comment-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; padding: 0 14px 12px;
+}
+.identity-comment-hint {
+  font-size: 11px; color: var(--text-light);
+  line-height: 1.4;
+}
+.identity-comment-btn {
+  flex-shrink: 0;
+  padding: 6px 12px; border-radius: 16px;
+  border: 1px solid rgba(94,122,146,0.25);
+  background: rgba(126,148,168,0.12);
+  color: var(--blue-deep); font-size: 11px; font-weight: 700;
+  font-family: 'Noto Sans SC', sans-serif; cursor: pointer;
+}
+.identity-comment-btn:active {
+  background: rgba(94,122,146,0.2);
+}
+
 .stars { display: flex; gap: 2px; }
 .star {
   font-size: 22px; cursor: pointer; transition: transform 0.1s;
@@ -507,16 +558,23 @@ header p {
 .comment-avatar.zhu { background: rgba(140,160,180,0.2); }
 .comment-avatar.hui { background: rgba(120,150,178,0.2); }
 .comment-avatar.xin { background: rgba(130,155,175,0.2); }
+.comment-avatar.guest { background: rgba(126,148,168,0.16); color: var(--blue-deep); }
 
 .comment-content { flex: 1; }
-.comment-author { font-size: 12px; font-weight: 700; color: var(--text-mid); }
 .comment-text { font-size: 13px; color: var(--text-dark); margin-top: 3px; line-height: 1.5; }
+.comment-author-inline { font-weight: 700; color: var(--text-mid); }
 .comment-time { font-size: 10px; color: var(--text-light); margin-top: 4px; }
 .comment-delete {
   font-size: 10px; color: var(--rose); cursor: pointer;
   margin-left: 8px; opacity: 0.6;
 }
 .comment-delete:active { opacity: 1; }
+.read-only-tip {
+  margin-top: 14px; padding: 10px 12px;
+  border-radius: 12px; border: 1px dashed var(--border);
+  background: rgba(255,255,255,0.4);
+  color: var(--text-light); font-size: 12px; line-height: 1.6;
+}
 
 .no-comments {
   text-align: center; color: var(--text-light);
@@ -725,6 +783,96 @@ header p {
   backdrop-filter: blur(8px);
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
+
+.identity-overlay {
+  position: fixed; inset: 0;
+  background: var(--overlay);
+  z-index: 700; display: none;
+  align-items: center; justify-content: center;
+  padding: 18px;
+  backdrop-filter: blur(5px);
+}
+.identity-overlay.open { display: flex; }
+.identity-modal {
+  width: 100%; max-width: 420px;
+  background: var(--cream);
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 50px rgba(38,50,62,0.22);
+  padding: 18px;
+}
+.identity-modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+}
+.identity-modal-title {
+  font-size: 24px; color: var(--text-dark);
+  font-family: 'Ma Shan Zheng', cursive;
+}
+.identity-modal-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: none; cursor: pointer;
+  background: rgba(38,50,62,0.08);
+  color: var(--text-mid); font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+}
+.identity-modal-subtitle {
+  color: var(--text-light); font-size: 12px;
+  line-height: 1.6; margin: 8px 0 14px;
+}
+.identity-option-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.identity-option {
+  border-radius: 16px; border: 1px solid var(--border);
+  background: rgba(255,255,255,0.52);
+  padding: 12px; text-align: left; cursor: pointer;
+  transition: all 0.15s; font-family: 'Noto Sans SC', sans-serif;
+}
+.identity-option.current {
+  border-color: var(--blue);
+  background: rgba(126,148,168,0.14);
+  box-shadow: inset 0 0 0 1px rgba(126,148,168,0.12);
+}
+.identity-option:active { transform: scale(0.98); }
+.identity-option-emoji { font-size: 19px; }
+.identity-option-name {
+  margin-top: 6px;
+  font-size: 14px; font-weight: 700; color: var(--text-dark);
+}
+.identity-option-tag {
+  margin-top: 2px;
+  font-size: 11px; color: var(--text-light);
+}
+.identity-guest-box {
+  margin-top: 12px; padding: 14px;
+  border-radius: 18px; border: 1px dashed var(--border);
+  background: rgba(255,255,255,0.38);
+}
+.identity-guest-label {
+  font-size: 13px; font-weight: 700; color: var(--text-mid);
+}
+.identity-helper {
+  margin-top: 4px;
+  font-size: 11px; color: var(--text-light); line-height: 1.5;
+}
+.identity-guest-input {
+  width: 100%; margin-top: 10px;
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 10px 12px; outline: none;
+  font-size: 14px; font-family: 'Noto Sans SC', sans-serif;
+  background: white; color: var(--text-dark);
+}
+.identity-guest-input:focus { border-color: var(--blue); }
+.identity-guest-btn {
+  width: 100%; margin-top: 10px;
+  padding: 11px 12px; border-radius: 12px;
+  border: none; cursor: pointer;
+  background: var(--blue); color: white;
+  font-size: 13px; font-weight: 700;
+  font-family: 'Noto Sans SC', sans-serif;
+}
+.identity-guest-btn:active { background: var(--blue-deep); }
 </style>
 </head>
 <body>
@@ -782,6 +930,10 @@ header p {
 </div>
 
 <div class="players-bar" id="playersBar"></div>
+<div class="identity-bar">
+  <div class="identity-current" id="identityCurrent"></div>
+  <button class="identity-switch-btn" onclick="openIdentityModal(true)">切换身份</button>
+</div>
 
 <div class="game-view" id="gameView">
   <div class="sort-bar">
@@ -820,6 +972,22 @@ header p {
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="identity-overlay" id="identityOverlay" onclick="closeIdentityModalOutside(event)">
+  <div class="identity-modal">
+    <div class="identity-modal-head">
+      <div class="identity-modal-title">选择身份</div>
+      <button class="identity-modal-close" id="identityModalClose" onclick="closeIdentityModal()">✕</button>
+    </div>
+    <div class="identity-modal-subtitle">评论会带上当前身份。评分暂时不限制，先只影响吐槽显示。</div>
+    <div class="identity-option-grid" id="identityOptions"></div>
+    <div class="identity-guest-box">
+      <div class="identity-guest-label">游客身份</div>
+      <div class="identity-helper">输入一个显示名，例如「姐姐」</div>
+      <input class="identity-guest-input" id="guestIdentityInput" maxlength="12" placeholder="输入游客昵称" />
+      <button class="identity-guest-btn" onclick="confirmGuestIdentity()">以游客身份进入</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ── THEME ── */
@@ -860,6 +1028,309 @@ const PLAYERS = [
   { key:'hui',  name:'小灰', emoji:'🐯', bg:'hui'  },
   { key:'xin',  name:'小心', emoji:'💛', bg:'xin'  },
 ];
+
+const IDENTITY_KEY = 'bg_identity_v1';
+const GUEST_EMOJI = '👤';
+const GUEST_BG = 'guest';
+
+function makeGuestId() {
+  return 'guest_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+function normalizeIdentity(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+
+  if (raw.type === 'fixed') {
+    const player = PLAYERS.find(p => p.key === raw.playerKey);
+    if (!player) return null;
+    return {
+      type: 'fixed',
+      playerKey: player.key,
+      displayName: player.name,
+      authUid: typeof raw.authUid === 'string' && raw.authUid ? raw.authUid : null,
+    };
+  }
+
+  if (raw.type === 'guest') {
+    const displayName = typeof raw.displayName === 'string' ? raw.displayName.trim().slice(0, 12) : '';
+    if (!displayName) return null;
+    return {
+      type: 'guest',
+      displayName,
+      guestId: typeof raw.guestId === 'string' && raw.guestId ? raw.guestId : makeGuestId(),
+      authUid: typeof raw.authUid === 'string' && raw.authUid ? raw.authUid : null,
+    };
+  }
+
+  return null;
+}
+
+function loadIdentity() {
+  try {
+    return normalizeIdentity(JSON.parse(localStorage.getItem(IDENTITY_KEY)));
+  } catch(e) {
+    return null;
+  }
+}
+
+let currentIdentity = loadIdentity();
+
+function storeIdentity(identity, options = {}) {
+  const normalized = normalizeIdentity(identity);
+  if (!normalized) return;
+
+  currentIdentity = normalized;
+  try {
+    localStorage.setItem(IDENTITY_KEY, JSON.stringify(currentIdentity));
+  } catch(e) {}
+
+  renderIdentityBar();
+  renderIdentityOptions();
+  renderPlayersBar();
+
+  if (options.refresh !== false && typeof setView === 'function') {
+    setView(currentView);
+  }
+}
+
+function getIdentityPlayer(identity = currentIdentity) {
+  if (!identity || identity.type !== 'fixed') return null;
+  return PLAYERS.find(p => p.key === identity.playerKey) || null;
+}
+
+function getIdentityLabel(identity = currentIdentity) {
+  if (!identity) return '未选择';
+  if (identity.type === 'fixed') {
+    const player = getIdentityPlayer(identity);
+    return player ? player.name : identity.displayName;
+  }
+  return `${identity.displayName}（游客）`;
+}
+
+function getIdentityBadgeHtml(identity = currentIdentity) {
+  return `
+    <span class="identity-badge-label">当前身份</span>
+    <span class="identity-badge-name">${escHtml(getIdentityLabel(identity))}</span>
+  `;
+}
+
+function getIdentityHeading(identity = currentIdentity) {
+  if (!identity) return '未选择身份';
+  if (identity.type === 'fixed') {
+    const player = getIdentityPlayer(identity);
+    return player ? `${player.emoji} ${player.name}` : identity.displayName;
+  }
+  return `${GUEST_EMOJI} ${identity.displayName}（游客）`;
+}
+
+function renderIdentityBar() {
+  const el = document.getElementById('identityCurrent');
+  if (!el) return;
+  el.innerHTML = getIdentityBadgeHtml();
+}
+
+function renderIdentityOptions() {
+  const wrap = document.getElementById('identityOptions');
+  const closeBtn = document.getElementById('identityModalClose');
+  if (!wrap || !closeBtn) return;
+
+  wrap.innerHTML = PLAYERS.map(player => {
+    const active = currentIdentity && currentIdentity.type === 'fixed' && currentIdentity.playerKey === player.key;
+    return `
+      <button class="identity-option ${active ? 'current' : ''}" onclick="selectFixedIdentity('${player.key}')">
+        <div class="identity-option-emoji">${player.emoji}</div>
+        <div class="identity-option-name">${player.name}</div>
+        <div class="identity-option-tag">${active ? '当前使用中' : '固定身份'}</div>
+      </button>
+    `;
+  }).join('');
+
+  closeBtn.style.display = currentIdentity ? 'flex' : 'none';
+}
+
+function openIdentityModal(prefillCurrent = false) {
+  renderIdentityOptions();
+  const overlay = document.getElementById('identityOverlay');
+  const input = document.getElementById('guestIdentityInput');
+  if (input) {
+    input.value = prefillCurrent && currentIdentity && currentIdentity.type === 'guest'
+      ? currentIdentity.displayName
+      : '';
+  }
+  overlay.classList.add('open');
+}
+
+function closeIdentityModal() {
+  if (!currentIdentity) return;
+  document.getElementById('identityOverlay').classList.remove('open');
+}
+
+function closeIdentityModalOutside(e) {
+  if (e.target === e.currentTarget) closeIdentityModal();
+}
+
+function selectFixedIdentity(playerKey) {
+  const player = PLAYERS.find(p => p.key === playerKey);
+  if (!player) return;
+
+  storeIdentity({
+    type: 'fixed',
+    playerKey: player.key,
+    displayName: player.name,
+    authUid: window.currentAuthUid || (currentIdentity && currentIdentity.authUid) || null,
+  });
+  closeIdentityModal();
+  toast(`当前身份：${player.name}`);
+}
+
+function confirmGuestIdentity() {
+  const input = document.getElementById('guestIdentityInput');
+  const displayName = input.value.trim().slice(0, 12);
+  if (!displayName) {
+    toast('请输入游客昵称');
+    input.focus();
+    return;
+  }
+
+  const guestId = currentIdentity && currentIdentity.type === 'guest'
+    ? currentIdentity.guestId
+    : makeGuestId();
+
+  storeIdentity({
+    type: 'guest',
+    displayName,
+    guestId,
+    authUid: window.currentAuthUid || (currentIdentity && currentIdentity.authUid) || null,
+  });
+  closeIdentityModal();
+  toast(`当前身份：${displayName}（游客）`);
+}
+
+function attachIdentityAuthUid(uid) {
+  if (!uid || !currentIdentity || currentIdentity.authUid === uid) return;
+  storeIdentity({ ...currentIdentity, authUid: uid }, { refresh: false });
+}
+
+function getCommentBucketKeyForIdentity(gid, identity = currentIdentity) {
+  if (!identity) return null;
+  if (identity.type === 'fixed') return `${gid}_${identity.playerKey}`;
+  return `${gid}_guest_${identity.guestId}`;
+}
+
+function getCommentsForBucket(bucketKey) {
+  const comments = D && D.comments ? D.comments[bucketKey] : null;
+  return Array.isArray(comments) ? comments : [];
+}
+
+function getCommentCountForIdentity(gid, identity = currentIdentity) {
+  const bucketKey = getCommentBucketKeyForIdentity(gid, identity);
+  return bucketKey ? getCommentsForBucket(bucketKey).length : 0;
+}
+
+function getCommentAuthorMeta(comment, bucketKey) {
+  if (comment && comment.authorType === 'fixed') {
+    const player = PLAYERS.find(p => p.key === comment.authorKey);
+    if (player) {
+      return { label: player.name, emoji: player.emoji, bg: player.bg };
+    }
+  }
+
+  if (comment && comment.authorType === 'guest') {
+    const guestName = comment.authorName || '游客';
+    return { label: `${guestName}（游客）`, emoji: GUEST_EMOJI, bg: GUEST_BG };
+  }
+
+  const parts = bucketKey.split('_');
+  const playerKey = parts[1];
+  const player = PLAYERS.find(p => p.key === playerKey);
+  if (player) {
+    return { label: player.name, emoji: player.emoji, bg: player.bg };
+  }
+
+  return { label: '游客', emoji: GUEST_EMOJI, bg: GUEST_BG };
+}
+
+function renderCommentItem(comment, bucketKey) {
+  const meta = getCommentAuthorMeta(comment, bucketKey);
+  return `
+    <div class="comment-item">
+      <div class="comment-avatar ${meta.bg}">${meta.emoji}</div>
+      <div class="comment-content">
+        <div class="comment-text"><span class="comment-author-inline">${escHtml(meta.label)}：</span>${escHtml(comment && comment.text)}</div>
+        <span class="comment-time">${fmtTime(comment && comment.ts)}
+          <span class="comment-delete" onclick="deleteComment('${bucketKey}',${comment && comment.ts})">删除</span>
+        </span>
+      </div>
+    </div>
+  `;
+}
+
+function openCommentBucket(gid, bucketKey, options = {}) {
+  const game = allGames().find(g => g.id === gid);
+  if (!game) return;
+
+  modalCtx = { type:'comment', gameId: gid, bucketKey, options };
+  document.getElementById('modalTitle').textContent = options.title || `💬 ${game.title} 吐槽`;
+
+  const comments = getCommentsForBucket(bucketKey);
+  const body = document.getElementById('modalBody');
+  let html = '';
+
+  if (!comments.length) {
+    html = `<div class="no-comments">${options.emptyText || '还没有吐槽，写一条吧！'}</div>`;
+  } else {
+    html = comments.slice().reverse().map(comment => renderCommentItem(comment, bucketKey)).join('');
+  }
+
+  if (!options.allowInput && options.readOnlyHint) {
+    html += `<div class="read-only-tip">${escHtml(options.readOnlyHint)}</div>`;
+  }
+  body.innerHTML = html;
+
+  const area = document.getElementById('commentInputArea');
+  const textarea = document.getElementById('commentTextarea');
+  if (options.allowInput) {
+    area.style.display = 'flex';
+    textarea.value = '';
+    textarea.placeholder = options.placeholder || '说点什么…';
+  } else {
+    area.style.display = 'none';
+  }
+
+  openModal();
+}
+
+function buildCommentPayload(text) {
+  const ts = Date.now();
+  if (!currentIdentity) return { text, ts };
+
+  if (currentIdentity.type === 'fixed') {
+    const player = getIdentityPlayer(currentIdentity);
+    return {
+      text,
+      ts,
+      authorType: 'fixed',
+      authorKey: player ? player.key : currentIdentity.playerKey,
+      authorName: player ? player.name : currentIdentity.displayName,
+      authorEmoji: player ? player.emoji : '',
+      authorBg: player ? player.bg : '',
+      authorUid: currentIdentity.authUid || null,
+    };
+  }
+
+  return {
+    text,
+    ts,
+    authorType: 'guest',
+    authorName: currentIdentity.displayName,
+    authorEmoji: GUEST_EMOJI,
+    authorBg: GUEST_BG,
+    authorGuestId: currentIdentity.guestId,
+    authorUid: currentIdentity.authUid || null,
+  };
+}
+
+window.attachIdentityAuthUid = attachIdentityAuthUid;
 
 const DEFAULT_GAMES = [
   { id:'g1',  title:'农场主',       tag:'带扩' },
@@ -978,7 +1449,7 @@ function toast(msg) {
 function renderPlayersBar() {
   const bar = document.getElementById('playersBar');
   bar.innerHTML = PLAYERS.map(p =>
-    `<div class="player-chip" onclick="openPlayerProfile('${p.key}')">${p.emoji} ${p.name}</div>`
+    `<div class="player-chip ${currentIdentity && currentIdentity.type === 'fixed' && currentIdentity.playerKey === p.key ? 'active' : ''}" onclick="openPlayerProfile('${p.key}')">${p.emoji} ${p.name}</div>`
   ).join('');
 }
 
@@ -1025,6 +1496,11 @@ function renderGames(filter) {
     const status = D.status[g.id] || 'unplayed';
     const statusLabel = status === 'played' ? '已玩' : '未开';
     const statusClass = status === 'played' ? 'played' : 'unplayed';
+    const identityLabel = currentIdentity ? `当前身份：${getIdentityLabel()}` : '先选择身份再写吐槽';
+    const identityCommentCount = currentIdentity ? getCommentCountForIdentity(g.id) : 0;
+    const identityButtonLabel = currentIdentity
+      ? `当前身份吐槽${identityCommentCount ? ` · ${identityCommentCount}` : ''}`
+      : '选择身份后吐槽';
 
     const tagHtml = g.tag ? `<span style="font-size:10px;color:var(--text-light);background:rgba(0,0,0,0.04);border-radius:6px;padding:2px 6px;border:1px solid var(--border);">${g.tag}</span>` : '';
 
@@ -1061,6 +1537,10 @@ function renderGames(filter) {
     gridHTML += '</div>';
 
     card.innerHTML = headerHTML + gridHTML + `
+      <div class="identity-comment-row">
+        <span class="identity-comment-hint">${escHtml(identityLabel)}</span>
+        <button class="identity-comment-btn" onclick="openIdentityCommentInput('${g.id}')">${identityButtonLabel}</button>
+      </div>
       <div class="card-actions" id="actions_${g.id}">
         <button class="action-btn" onclick="openEditGame('${g.id}')">
           <div class="action-icon edit-icon">✏️</div>
@@ -1140,7 +1620,9 @@ function deleteGame(gid) {
   // Clean up associated data
   PLAYERS.forEach(p => {
     delete D.ratings[gid+'_'+p.key];
-    delete D.comments[gid+'_'+p.key];
+  });
+  Object.keys(D.comments || {}).forEach(key => {
+    if (key.startsWith(gid + '_')) delete D.comments[key];
   });
   delete D.status[gid];
   delete (D.edits||{})[gid];
@@ -1211,30 +1693,37 @@ function openGameThread(gid) {
 
   const body = document.getElementById('modalBody');
   let allCmts = [];
-  PLAYERS.forEach(p => {
-    (D.comments[gid+'_'+p.key]||[]).forEach(c => {
-      allCmts.push({ ...c, playerKey: p.key, player: p });
+  Object.entries(D.comments || {}).forEach(([bucketKey, comments]) => {
+    if (!bucketKey.startsWith(gid + '_') || !Array.isArray(comments)) return;
+    comments.forEach(comment => {
+      allCmts.push({ ...comment, bucketKey });
     });
   });
-  allCmts.sort((a,b) => b.ts - a.ts);
+  allCmts.sort((a,b) => (b.ts || 0) - (a.ts || 0));
 
   if (!allCmts.length) {
-    body.innerHTML = `<div class="no-comments">还没有人吐槽过这个游戏<br>点每人名字旁边的 ＋ 开始吐槽吧</div>`;
+    body.innerHTML = `<div class="no-comments">还没有人吐槽过这个游戏<br>点卡片下方的「当前身份吐槽」开始吐槽吧</div>`;
   } else {
-    body.innerHTML = allCmts.map(c => `
-      <div class="comment-item">
-        <div class="comment-avatar ${c.player.bg}">${c.player.emoji}</div>
-        <div class="comment-content">
-          <span class="comment-author">${c.player.name}</span>
-          <div class="comment-text">${escHtml(c.text)}</div>
-          <span class="comment-time">${fmtTime(c.ts)}
-            <span class="comment-delete" onclick="deleteComment('${gid}','${c.playerKey}',${c.ts})">删除</span>
-          </span>
-        </div>
-      </div>
-    `).join('');
+    body.innerHTML = allCmts.map(c => renderCommentItem(c, c.bucketKey)).join('');
   }
   openModal();
+}
+
+function openIdentityCommentInput(gid) {
+  const game = allGames().find(g => g.id === gid);
+  if (!game) return;
+
+  if (!currentIdentity) {
+    openIdentityModal();
+    return;
+  }
+
+  openCommentBucket(gid, getCommentBucketKeyForIdentity(gid), {
+    title: `${getIdentityHeading()} 对 ${game.title} 的吐槽`,
+    allowInput: true,
+    emptyText: '还没有吐槽，写一条吧！',
+    placeholder: `以${getIdentityLabel()}身份说点什么…`,
+  });
 }
 
 /* ── SINGLE PLAYER COMMENT INPUT ── */
@@ -1242,61 +1731,53 @@ function openCommentInput(gid, pkey) {
   const game = allGames().find(g=>g.id===gid);
   const player = PLAYERS.find(p=>p.key===pkey);
   if (!game||!player) return;
-  modalCtx = { type:'comment', gameId:gid, playerKey:pkey };
-  document.getElementById('modalTitle').textContent = `${player.emoji} ${player.name} 对 ${game.title} 的吐槽`;
+  const canWrite = currentIdentity && currentIdentity.type === 'fixed' && currentIdentity.playerKey === pkey;
+  const readOnlyHint = !currentIdentity
+    ? '先选择身份，再写吐槽。'
+    : canWrite
+      ? ''
+      : `当前身份是 ${getIdentityLabel()}。这里只显示 ${player.name} 的吐槽；想以当前身份发言，请点卡片下方的“当前身份吐槽”。`;
 
-  const cmts = D.comments[gid+'_'+pkey] || [];
-  const body = document.getElementById('modalBody');
-  if (!cmts.length) {
-    body.innerHTML = `<div class="no-comments">还没有吐槽，写一条吧！</div>`;
-  } else {
-    body.innerHTML = cmts.slice().reverse().map(c => `
-      <div class="comment-item">
-        <div class="comment-avatar ${player.bg}">${player.emoji}</div>
-        <div class="comment-content">
-          <span class="comment-author">${player.name}</span>
-          <div class="comment-text">${escHtml(c.text)}</div>
-          <span class="comment-time">${fmtTime(c.ts)}
-            <span class="comment-delete" onclick="deleteComment('${gid}','${pkey}',${c.ts})">删除</span>
-          </span>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  const area = document.getElementById('commentInputArea');
-  area.style.display = 'flex';
-  document.getElementById('commentTextarea').value = '';
-  openModal();
+  openCommentBucket(gid, `${gid}_${pkey}`, {
+    title: `${player.emoji} ${player.name} 对 ${game.title} 的吐槽`,
+    allowInput: canWrite,
+    emptyText: canWrite ? '还没有吐槽，写一条吧！' : `${player.name} 还没有吐槽`,
+    readOnlyHint,
+    placeholder: `以${player.name}身份说点什么…`,
+  });
 }
 
 function submitComment() {
-  if (!modalCtx || modalCtx.type !== 'comment') return;
+  if (!modalCtx || modalCtx.type !== 'comment' || !modalCtx.options || !modalCtx.options.allowInput) return;
+  if (!currentIdentity) {
+    openIdentityModal();
+    return;
+  }
   const text = document.getElementById('commentTextarea').value.trim();
   if (!text) return;
-  const key = modalCtx.gameId + '_' + modalCtx.playerKey;
+  const key = modalCtx.bucketKey;
   if (!D.comments[key]) D.comments[key] = [];
-  D.comments[key].push({ text, ts: Date.now() });
+  D.comments[key].push(buildCommentPayload(text));
   save(D);
-  openCommentInput(modalCtx.gameId, modalCtx.playerKey);
+  openCommentBucket(modalCtx.gameId, modalCtx.bucketKey, modalCtx.options);
   setView(currentView);
   toast('💬 吐槽成功');
 }
 
-function deleteComment(gid, pkey, ts) {
-  const key = gid+'_'+pkey;
+function deleteComment(key, ts) {
   D.comments[key] = (D.comments[key]||[]).filter(c => c.ts !== ts);
+  if (!D.comments[key].length) delete D.comments[key];
   save(D);
   // refresh the current modal
   if (modalCtx) {
-    if (modalCtx.type === 'comment') openCommentInput(gid, pkey);
-    else if (modalCtx.type === 'thread') openGameThread(gid);
+    if (modalCtx.type === 'comment') openCommentBucket(modalCtx.gameId, modalCtx.bucketKey, modalCtx.options);
+    else if (modalCtx.type === 'thread') openGameThread(modalCtx.gameId);
   }
   setView(currentView);
 }
 
 function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 
 /* ── PLAYER PROFILE ── */
@@ -1455,6 +1936,13 @@ document.querySelectorAll('.sort-btn').forEach(b => {
   });
 });
 
+document.getElementById('guestIdentityInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    confirmGuestIdentity();
+  }
+});
+
 /* ── RESET ── */
 function confirmReset() {
   if (confirm('确定要清空所有评分、吐槽、自建游戏吗？\n此操作不可恢复。')) {
@@ -1464,8 +1952,11 @@ function confirmReset() {
 }
 
 /* ── INIT ── */
+renderIdentityBar();
+renderIdentityOptions();
 renderPlayersBar();
 setView('all');
+if (!currentIdentity) openIdentityModal();
 </script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
@@ -1498,6 +1989,7 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     window.currentAuthUser = user;
     window.currentAuthUid = user.uid;
+    window.attachIdentityAuthUid?.(user.uid);
     console.log("Anonymous signed in:", user.uid);
   }
 });
