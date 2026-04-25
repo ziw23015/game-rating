@@ -1421,5 +1421,31 @@ function confirmReset() {
 renderPlayersBar();
 setView('all');
 </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getDatabase, ref, set, update, onValue } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD3SMd_mxeBEIeMDKzhYDNayeg4pfEC9Kk",
+    authDomain: "game-rating-jsby.firebaseapp.com",
+    databaseURL: "https://game-rating-jsby-default-rtdb.firebaseio.com",
+    projectId: "game-rating-jsby",
+    storageBucket: "game-rating-jsby.firebasestorage.app",
+    messagingSenderId: "101902525121",
+    appId: "1:101902525121:web:158aab7d7b413a3f7dea40",
+    measurementId: "G-72JNH1JHRD"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  window.firebaseDatabase = database;
+  window.firebaseRef = ref;
+  window.firebaseSet = set;
+  window.firebaseUpdate = update;
+  window.firebaseOnValue = onValue;
+
+  console.log("Firebase connected successfully.");
+</script>
 </body>
 </html>
